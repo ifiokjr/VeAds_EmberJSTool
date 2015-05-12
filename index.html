@@ -17,13 +17,13 @@
         <a class="navbar-brand" href="#">VeAds Congfigurator</a>
         <ul class="nav navbar-nav navbar-right">
           <li>{{#link-to 'about'}}About{{/link-to}}</li>
-          /*<li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
-          <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>*/
+          <li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
+          <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>
         </ul>
     </div>
   </div>
 
-
+{{outlet}}
 </script>
 
  <!-- OUTLET - Very important element of ember. It's like a container to render different things, in this case, the about section.-->
@@ -60,6 +60,7 @@
   <script src="js/libs/jquery-1.10.2.js"></script>
   <script src="js/libs/handlebars-v1.3.0.js"></script>
   <script src="js/libs/ember-1.11.0.js"></script>
+  <script src="js/libs/ember-data.js"></script>
   <script src="js/libs/ember-template-compiler-1.11.0.js"></script>
   <script src="js/libs/bootstrap.js"></script>
   <script src="js/app.js"></script>

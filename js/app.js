@@ -4,7 +4,7 @@ var App = Ember.Application.create();
 *
 * Indicates the app where to store things, and where to get the stored things from.
 */
-App.Store = DS.Store.extend({
+App.ApplicationStore = DS.Store.extend({
 	revision:12,
 	adapter: 'DS.FixtureAdapter'
 });
@@ -13,8 +13,8 @@ App.Store = DS.Store.extend({
 * Creates the routes to link the different pages.
 */
 App.Router.map(function() {
-  // this.resource('pages');
-  // this.resource('elements');
+   this.resource('pages');
+   this.resource('elements');
   this.resource('about');
 });
 

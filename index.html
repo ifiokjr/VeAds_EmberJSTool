@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Ember Starter Kit</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+</head>
+<body>
+
+
+<!-- This section is always rendered -->
+<script type="text/x-handlebars" data-template-name="application">
+  <div class="navbar navbar-default">
+    <div class="container">
+        <a class="navbar-brand" href="#">VeAds Congfigurator</a>
+        <ul class="nav navbar-nav navbar-right">
+          <li>{{#link-to 'about'}}About{{/link-to}}</li>
+          /*<li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
+          <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>*/
+        </ul>
+    </div>
+  </div>
+
+
+</script>
+
+ <!-- OUTLET - Very important element of ember. It's like a container to render different things, in this case, the about section.-->
+ <!-- linkTo - Replacement of the links. linkTo retrieves the App.route and links it to the id="about". It also adds the class .active to about when it's clicked.-->
+
+ <!-- Ember will match the route about with the about id. -->
+   <script type="text/x-handlebars" id="about">
+    <div class="about">
+      <p>This is just a test for the future tool super powerful that we are building.</p>
+    </div>
+  </script>
+
+ <!-- Ember will match the route about with the pages id. -->
+    <script type="text/x-handlebars" id="pages">
+    <div class="container">
+      <div class="row">
+        <div class="span3">
+          <table class='table'>
+            <thead>
+              <tr><th>Recent Pages</th></tr>
+            </thead>
+            <tr><td>
+              <a href='#'>Page: name <small class='muted'>pageId: id</small></a>
+            </td></tr>
+          </table>
+        </div>        
+        <div class="span9">
+          <p>This is just an example of how a page would look like</p>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="js/libs/jquery-1.10.2.js"></script>
+  <script src="js/libs/handlebars-v1.3.0.js"></script>
+  <script src="js/libs/ember-1.11.0.js"></script>
+  <script src="js/libs/ember-template-compiler-1.11.0.js"></script>
+  <script src="js/libs/bootstrap.js"></script>
+  <script src="js/app.js"></script>
+  <!-- to activate the test runner, add the "?test" query string parameter -->
+  <!-- <script src="tests/runner.js"></script> -->
+</body>
+</html>
+

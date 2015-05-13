@@ -6,56 +6,110 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="css/bootstrap-theme.css">
 </head>
 <body>
 
 
 <!-- This section is always rendered -->
+<!-- Each one of the script sections is called template. data-template-name="application"-->
 <script type="text/x-handlebars" data-template-name="application">
-  <div class="navbar navbar-default">
+  <nav class="navbar navbar-default">
     <div class="container">
         <a class="navbar-brand" href="#">VeAds Congfigurator</a>
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-left">
           <li>{{#link-to 'about'}}About{{/link-to}}</li>
-          <li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
+          <li>{{#link-to 'Page'}}Pages{{/link-to}}</li><!--Name of the data template name. We need to indicate with the route where to load it.-->
           <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>
         </ul>
     </div>
+  </nav>
+
+  <!-- /*The outlet changes all he content of the parent div*/  -->
+  <div>
+    {{outlet}}
   </div>
 
-{{outlet}}
+  <!-- /*I can't make it work if I don't sorround each template with a DOM element. It substitutes everything until the first tag.*/  -->
+  <!-- /*These properties belong to the global controler*/  -->
+  <footer class="footer">
+  This is a <strong>{{controller.appName}}</strong> Tool for <strong>{{controller.companyName}}</strong> and this is the footer section.
+  </footer>
 </script>
 
  <!-- OUTLET - Very important element of ember. It's like a container to render different things, in this case, the about section.-->
- <!-- linkTo - Replacement of the links. linkTo retrieves the App.route and links it to the id="about". It also adds the class .active to about when it's clicked.-->
+ <!-- link-to - Replacement of the links. link-to retrieves the App.route and links it to the id="about". It also adds the class .active to about when it's clicked.-->
 
  <!-- Ember will match the route about with the about id. -->
-   <script type="text/x-handlebars" id="about">
-    <div class="about">
+  <script type="text/x-handlebars" data-template-name="about">
+    <div>
       <p>This is just a test for the future tool super powerful that we are building.</p>
     </div>
   </script>
 
  <!-- Ember will match the route about with the pages id. -->
-    <script type="text/x-handlebars" id="pages">
+  <script type="text/x-handlebars" data-template-name="Page">
     <div class="container">
       <div class="row">
-        <div class="span3">
-          <table class='table'>
+        <div class="col-xs-3">
+          <table class="table">
             <thead>
               <tr><th>Recent Pages</th></tr>
             </thead>
             <tr><td>
-              <a href='#'>Page: name <small class='muted'>pageId: id</small></a>
+              <label for="newPage">Name:</label>
+              <span class="pageInput">
+                {{input type="text" id="newPage" placeholder="Creation of a new page" value=newName insert-newline="createPage"}}
+                <button class="btn btn-primary btn-sm" {{action "createPage"}} >Add</button>
+                <!-- /*This creates an input with the value bound to the property newName of the controller*/ -->
+                <!-- /*Also, when pressing enter key executes the controller createTodo*/ -->
+              </span>
             </td></tr>
+            <tbody>
+           {{#each pages in model}} <!--/*These are the pages defined on the route*/-->
+            <tr><td>
+              <span class='pageLine'>Page: <a href="#"><span>{{pages.name}}</span></a> <small class='muted'> pageId: <span>{{pages.id}}</span></small></span>
+              <!-- <span class='pageLine'>Page: {{#link-to 'page' this}}<span>{{pages.name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{pages.id}}</span></small></span> -->
+            </td></tr>
+            {{/each}}
+            </tbody>
           </table>
         </div>        
-        <div class="span9">
-          <p>This is just an example of how a page would look like</p>
+        <div class="col-xs-9">
+         {{outlet}}
         </div>
       </div>
     </div>
   </script>
+
+  <!-- <script type="text/x-handlebars" id="pages/index">
+    <p class="text-warning"><p>This is just an example of how a page would look like</p>
+  </script>-->
+
+  <!--<script type="text/x-handlebars" data-template-name="page">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-3">
+          <table>
+            <thead>
+              <tr><th>Recent Pages</th></tr>
+            </thead>
+            {{#each pages in model}} /*These are the pages defined on the route*/
+            <tr><td>
+              <a href='#'>Page: <span>{{pages.name}}</span> <small class='muted'> pageId: <span>{{pages.id}}</span></small></a>
+            </td></tr>
+            {{/each}}
+          </table>
+        </div>        
+        <div class="col-xs-9">
+          <p>This is just an example of how a page would look like</p>
+        </div>
+      </div>
+    </div>
+  </script>-->
+
 
   <script src="js/libs/jquery-1.10.2.js"></script>
   <script src="js/libs/handlebars-v1.3.0.js"></script>
@@ -63,7 +117,10 @@
   <script src="js/libs/ember-data.js"></script>
   <script src="js/libs/ember-template-compiler-1.11.0.js"></script>
   <script src="js/libs/bootstrap.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/application.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/models/Page.js"></script>
+  <script src="js\controllers\Pages_controller.js"></script>
   <!-- to activate the test runner, add the "?test" query string parameter -->
   <!-- <script src="tests/runner.js"></script> -->
 </body>

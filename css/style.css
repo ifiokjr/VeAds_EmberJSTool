@@ -1,4 +1,51 @@
 /* Put your CSS here */
 .ember-application {
-    margin: 20px;
+    margin: 30px;
+}
+
+
+/**
+* NAVBAR STYLES
+*/
+.navbar-brand{
+  font-size: 24px;
+}
+
+.table .pageInput{
+	display:inline-block;
+	text-align: left;
+	padding:5px;
+}
+.table a{
+
+	font-weight:bold;
+	color:initial;
+	text-decoration:underline;
+}
+	.table a:hover{
+		color:initial;
+	}
+
+/**
+* Page display
+*/
+.pageTitle{
+
+  border-bottom: 3px solid black;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  font-style: italic;
+  font-weight:bold;
+}
+.pageTitle h1{
+
+	font-style:normal;
+  	padding-bottom: 5px;
+}
+/**
+* FOOTER
+*/
+.footer{
+
+	margin-top: 30px;
 }

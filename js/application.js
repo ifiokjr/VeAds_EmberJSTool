@@ -1,20 +1,22 @@
-/**
-*
-* Creation of the app with our global name
-*/
-window.VeAds = Ember.Application.create();
+App = Ember.Application.create();
 
 /**
 *
 * Extending the fixture adapting to be able to use the data flux in our app
 */
-VeAds.ApplicationAdapter = DS.FixtureAdapter.extend();
+App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
 /**
 *
-* Controller associated to the default template 'application'. "Static" way of binding text.
+* Controller associated to the default template. "Static" way of binding values.
 */
-VeAds.ApplicationController = Ember.Controller.extend({
+App.ApplicationController = Ember.Controller.extend({
+
+  author: "Jose Sentis"
+});
+
+
+App.IndexController = Ember.Controller.extend({
 
   appName: "VeAds",
   companyName: "VeInteractive"

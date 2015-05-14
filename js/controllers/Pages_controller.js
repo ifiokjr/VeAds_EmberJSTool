@@ -1,24 +1,33 @@
 /**
 *
-* Controller associated to the template 'page'.
+* CONTROLLERS.
+* IMPORTANT: The page controllers are related to the ROUTING names
 */
-VeAds.PageController = Ember.ArrayController.extend({
+
+App.NewPageController = Ember.ArrayController.extend({
   actions: {
     createPage: function() {
       // Get the page name by the newPage field
       var name = this.get('newName');
-      if (!name.trim()) { return; }
+      var type = this.get('newType');
+      var url = this.get('newUrl');
+
+      if (!name.trim() || !type.trim() || !url.trim()) { return; }
 
       // Create the new Page model
       var page = this.store.createRecord('Page', {
-        id: $('.pageLine').length+1,
+
+        id: App.Page.FIXTURES[App.Page.FIXTURES.length-1].id+1,
+        // id: $('.pageLine').length+1,
         name: name,
-        pageType: 'page type',
-        addresses: 'addresses'
+        pageType: type,
+        addresses: url
       });
 
       // Clear the "newName" text field
       this.set('newName', '');
+      this.set('newType', '');
+      this.set('newUrl', '');
 
       // Save the new model
       /* Save returns a promise. These are used to handle the exit or failure of the saving.

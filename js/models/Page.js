@@ -1,8 +1,8 @@
 /**
 *
-* We define the model. What is a page?
+* MODEL
 */
-VeAds.Page = DS.Model.extend({
+App.Page = DS.Model.extend({
    	name: DS.attr('string'),
 	pageType: DS.attr('string'),
 	address: DS.attr('string')
@@ -12,7 +12,7 @@ VeAds.Page = DS.Model.extend({
 *
 * This is some static content using the FixtureAdapter extended in application.js . Page examples 
 */
-VeAds.Page.FIXTURES = [
+App.Page.FIXTURES = [
 	{
 		id:1,
 	    name: 'Product Page',

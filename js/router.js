@@ -7,9 +7,10 @@ App.Router.map(function() {
   this.resource('about');
   this.resource('pages', function(){
 
+    this.route('index');
     this.resource('page', {path: ':page_id'});
   });
-  this.resource('newPage');
+  // this.resource('newPage');
 });
 
 /**

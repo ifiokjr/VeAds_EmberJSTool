@@ -12,7 +12,13 @@ App.ApplicationAdapter = DS.FixtureAdapter.extend();
 */
 App.ApplicationController = Ember.Controller.extend({
 
-  author: "Jose Sentis"
+ 	author: "Jose Sentis",
+ 	flexID : '',
+ 	GenieJC : '',
+	ConversionID : '',
+	SegProdPage : '',
+	SegCompPage : '',
+	SegROSPage : ''
 });
 
 

@@ -19,8 +19,7 @@
           <ul class="nav navbar-nav navbar-left">
             <li>{{#link-to 'about'}}About{{/link-to}}</li>
             <li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
-            <!--/*<li>{{#link-to 'newPage'}}New Page{{/link-to}}</li>*/-->
-            <li><a href="#">Elements</a></li>
+            <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>
           </ul>
       </div>
     </nav>
@@ -30,33 +29,31 @@
       {{outlet}}
     </div>
 
-
-
     <footer class="footer">
       <div class="container-fluid panel panel-primary">
         <div class="row panel-heading">
           <div class="col-xs-12">
 
-            <h3 class="panel-title">Global features:</h3>
+            <h4 class="panel-title">Global features:</h4>
           </div>   
         </div>   
         <div class="row panel-body">    
-          <div class="col-xs-12 col-sm-6 col-md-2 col-lg-3 form-group">
+          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
               
             <label class="inputLabel">Flex ID:</label> 
             <span> {{input class="form-control" type="text" id="flexID" placeholder="6 Digit code" value=flexID}}</span> 
           </div>
-          <div class="col-xs-12 col-sm-6 col-md-2 col-lg-3 form-group">
+          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
 
             <label class="inputLabel">Genie J.Code:</label>
             <span> {{input class="form-control" type="text" id='GenieJC' placeholder="aBceDelkj" value=GenieJC}}</span> 
           </div>
-          <div class="col-xs-12 col-sm-6 col-md-2 col-lg-3 form-group">
+          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
 
             <label class="inputLabel">Conversion ID:</label> 
             <span>{{input class="form-control" type="text" id='ConversionID' placeholder="Conversion ID" value=ConversionID}}</span> 
           </div>
-          <div class="col-xs-12 col-sm-6 col-md-2 col-lg-3 form-group">
+          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
 
             <label class="inputLabel">Segment IDs:</label>
             <div class="container-fluid">
@@ -86,12 +83,9 @@
 
   </script>
 
+
+<!-- INDEX -->
   <script type="text/x-handlebars" id="index">
-    <!--/*<ul>
-    {{#each item in model}}
-      <li>{{item}}</li>
-    {{/each}}
-    </ul>*/-->
     Welcome!! This is a <strong>{{controller.appName}}</strong> Tool for <strong>{{controller.companyName}}</strong> and this is the footer section.
   </script>
 
@@ -102,6 +96,8 @@
     </div>
   </script>
 
+
+<!-- PAGES -->
   <script type="text/x-handlebars" id="pages">
         <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
     <div class="container-fluid">
@@ -112,12 +108,16 @@
               <tr><th><h4>Recent Pages</h4></th></tr>
             </thead>
             <tbody>
-             {{#each model}} <!--/*These are the pages defined on the route*/-->
+             {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
-                  <!--/*<span class='pageLine'>Page: <a href="#"><span>Name</span></a> <small class='muted'> pageId: <span>ID</span></small></span>*/-->
-                  Page: <span class='pageLine'>{{#link-to 'page' this}}<span>{{name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{id}}</span></small></span>
+                  Page: <span class='pageLine'>{{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{elem.id}}</span></small></span>
                 </td></tr>
               {{/each}}
+                <tr><td>
+                  <span class="pull-right">
+                    {{#link-to 'pages'}}<div class="btn btn-primary btn-sm">Create Page</div>{{/link-to}}
+                 </span>
+                </td></tr>
             </tbody>
           </table>
         </div>        
@@ -128,42 +128,53 @@
     </div>
   </script>
 
-  <script type="text/x-handlebars" id="pages/index">
-    <div class="container-fluid">
 
-      <div class="row">
-        ADD YOUR NEW PAGE --> Do this in the "panel" style like the global features.
-      </div>
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Name:</label>
+  <script type="text/x-handlebars" id="pages/index">
+
+    <div class="container-fluid panel panel-primary">
+      <div class="row panel-heading">
+        <div class="col-xs-12">
+          <h4 class="panel-title">New Page Creation</h4>
+        </div> 
+      </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Name:</label>
           <span class="pageInput">
-            {{input type="text" id="newName" placeholder="New name" value=newName insert-newline="createPage"}}
+            {{input type="text" class="form-control" id="newPName" placeholder="New name" value=newPName insert-newline="createPage"}}
            </span>
         </div>        
       </div>
 
       <!--/*[:TODO] - EMBER DOESN'T SUPPORT DROPDOWN SELECT, IT HAS TO BE CUSTOM, LATER ON ALSO THE SUPPORT FOR INPUT-URL*/-->
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Page type:</label>
+      <!--/*<div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Page type:</label>
           <span class="pageInput">
-            {{input type="text" id="newType" placeholder="Page type" value=newType insert-newline="createPage"}}
+            {{input type="text" id="newPType" class="form-control" placeholder="Page type" value=newPType insert-newline="createPage"}}
+          </span>
+        </div>        
+      </div>*/-->
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Page type Selection:</label>
+          <span class="pageInput">
+            {{view "select" content=pageTypeElements value=selectedPageType}}
           </span>
         </div>        
       </div>
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Url:</label>
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Url:</label>
           <span class="pageInput">
-              {{input type="text" id="newUrl" placeholder="Url of the page" value=newUrl insert-newline="createPage"}}
+              {{input type="text" id="newPUrl" class="form-control" placeholder="Url of the page" value=newPUrl insert-newline="createPage"}}
           </span>
         </div>        
       </div>      
-      <div class="row">
-        <div class="col-xs-10">
-          <span class="pageInput">
-            <button class="btn btn-primary btn-sm" {{action "createPage"}} >Create</button>
+      <div class="row panel-footer">
+        <div class="col-xs-12">
+          <span class="pageInput pull-right">
+            <button class="btn btn-primary btn-sm" {{action "createPage"}} >Create Page</button>
            </span>
         </div>        
       </div>
@@ -172,7 +183,7 @@
 
   <script type="text/x-handlebars" id="page">
 
-    <div class="pageTitle">
+    <div class="modelTitle">
 
       <h1>{{name}}</h1>
       <h2>with ID: <span>{{id}}</span></h2>
@@ -186,6 +197,115 @@
       {{address}}
     </div>
   </script>
+
+
+<!-- ELEMENTS -->
+  <script type="text/x-handlebars" id="elements">
+        <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-3">
+          <table class="table">
+            <thead>
+              <tr><th><h4>Recent Elements</h4></th></tr>
+            </thead>
+            <tbody>
+             {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
+                <tr><td>
+                  Page: <span class='pageLine'>{{#link-to 'element' elem}}<span>{{elem.name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{elem.id}}</span></small></span>
+                </td></tr>
+              {{/each}}
+                <tr><td>
+                  <span class="pull-right">
+                    {{#link-to 'elements'}}<div class="btn btn-primary btn-sm">Create Element</div>{{/link-to}}
+                 </span>
+                </td></tr>
+            </tbody>
+          </table>
+        </div>        
+        <div class="col-xs-9">
+         {{outlet}}
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="elements/index">
+      <div class="container-fluid panel panel-primary">
+        <div class="row panel-heading">
+          <div class="col-xs-12">
+            <h4 class="panel-title">New Element Creation</h4>
+          </div> 
+        </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Name:</label>
+          <span class="pageInput">
+            {{input type="text" class="form-control" id="newEName" placeholder="New name" value=newEName insert-newline="createElement"}}
+           </span>
+        </div>        
+      </div>
+
+      <!--/*[:TODO] - EMBER DOESN'T SUPPORT DROPDOWN SELECT, IT HAS TO BE CUSTOM, LATER ON ALSO THE SUPPORT FOR INPUT-URL*/-->
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Element selector:</label>
+          <span class="pageInput">
+            {{input type="text" id="newESelector" class="form-control" placeholder="Page type" value=newESelector insert-newline="createElement"}}
+          </span>
+        </div>        
+      </div>    
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Pages to apply:</label>
+          <span class="pageInput">
+            {{view "select" content=currentPages value=pagesToApply}}
+          </span>
+        </div>        
+      </div>--      
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group pages-to-apply">
+          <label class="inputLabel" for="newPage">Pages to apply:</label>
+
+          I want to hide this on a dropdown
+          <div class="mutliSelect">
+            <ul>
+              <li><input type='checkbox' value='0' /><span>Example ID</span> <span>Example Name</span></li>
+            </ul>
+          <!--/*We should do value={{page.id}} but it's not supported yet, so if we want value=ID we need to do it manually
+            <ul>
+              {{#each page in currentPages}}
+
+                  <li><input type="checkbox" value={{page.id}} /><span>{{page.id}}</span> <span>{{page.name}}</span></li>
+              {{/each}}
+            </ul>*/-->
+          </div>
+        </div>        
+      </div>
+      <div class="row panel-footer">
+        <div class="col-xs-12">
+          <span class="pageInput pull-right">
+            <button class="btn btn-primary btn-sm" {{action "createElement"}}>Create Element</button>
+           </span>
+        </div>        
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="element">
+
+    <div class="modelTitle">
+
+      <h1>{{name}}</h1>
+      <h2>with ID: <span>{{id}}</span></h2>
+    </div>
+
+    <div class="intro">
+      {{selector}}
+    </div> 
+
+  </script>
+
 
     <!--/*<script type="text/x-handlebars" id="newPage">
     <div class="container-fluid">
@@ -235,6 +355,7 @@
   <script src="js/application.js"></script>
   <script src="js/router.js"></script>
   <script src="js/models/Page.js"></script>
+  <script src="js/models/Element.js"></script>
   <script src="js\controllers\Pages_controller.js"></script>
   <script src="tests/runner.js"></script>
 </body>

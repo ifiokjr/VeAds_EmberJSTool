@@ -10,7 +10,11 @@ App.Router.map(function() {
     this.route('index');
     this.resource('page', {path: ':page_id'});
   });
-  // this.resource('newPage');
+  this.resource('elements', function(){
+
+    this.route('index');
+    this.resource('element', {path: ':element_id'});
+  });
 });
 
 /**
@@ -21,5 +25,12 @@ App.PagesRoute = Ember.Route.extend({
   model: function() {
 
     return this.store.find('Page');
+  }
+});
+
+App.ElementsRoute = Ember.Route.extend({
+  model: function() {
+
+    return this.store.find('Element');
   }
 });

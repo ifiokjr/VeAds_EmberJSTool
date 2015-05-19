@@ -33,6 +33,35 @@ App.IndexController = Ember.Controller.extend({
 
 /**
 *
+* Definition of an own type
+*/
+
+
+DS.ArrayTransform = DS.Transform.extend({
+  deserialize: function(serialized) {
+    return (Ember.typeOf(serialized) == "array")
+        ? serialized 
+        : [];
+  },
+
+  serialize: function(deserialized) {
+    var type = Ember.typeOf(deserialized);
+    if (type == 'array') {
+        return deserialized
+    } else if (type == 'string') {
+        return deserialized.split(',').map(function(item) {
+            return jQuery.trim(item);
+        });
+    } else {
+        return [];
+    }
+  }
+});
+
+App.register("transform:array", DS.ArrayTransform);
+
+/**
+*
 * CONTROLLERS.
 * IMPORTANT: The page controllers are related to the ROUTING names
 */
@@ -57,7 +86,8 @@ App.PagesIndexController = Ember.ArrayController.extend({
 				// id: $('.pageLine').length+1,
 				name: name,
 				pageType: type,
-				address: url
+				address: url,
+				elements: ['Elements not selected']
 			});
 
 			// Clear the "newName" text field
@@ -85,6 +115,32 @@ App.PagesIndexController = Ember.ArrayController.extend({
   	}
 });
 
+/**
+* Handles the view object
+*/
+App.ElementsIndexView = Ember.View.extend({
+  didInsertElement : function(){//Function executed after the object is inserted on the template
+
+    this._super();
+
+    	var pList = "";
+
+		for(var i = 0; i < App.Page.FIXTURES.length; i++){
+
+			$('.multiSelect ul').append("<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /> Name: <span>"+App.Page.FIXTURES[i].name+"</span> ID:<span>"+App.Page.FIXTURES[i].id+"</span></li>");
+		}
+
+		$('.multiSel').click(function(){
+			$(".dropdown dd ul").slideToggle('fast');
+		});
+
+		$('input[type=checkbox]').click(function(){
+
+			$('.checkedSelected').text($('input[type=checkbox]:checked').length);
+		})
+  }
+});
+
 App.ElementsIndexController = Ember.ArrayController.extend({
 	/*currentPages : [], NOT SUPPORTED, BUT LEFT HERE AS AN EXAMPLE OF HOW TO DO IT
 	init: function(){
@@ -97,42 +153,50 @@ App.ElementsIndexController = Ember.ArrayController.extend({
 			this.currentPages.push({id:App.Page.FIXTURES[i].id,name:App.Page.FIXTURES[i].name});
 		}
 	},*/
-	init: function(){
-
-		this._super(); //Necessary if we override init.
-
-		var pList = "";
-
-		for(var i = 0; i < App.Page.FIXTURES.length; i++){
-
-			pList += "<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /><span>"+App.Page.FIXTURES[i].id+"</span><span>"+App.Page.FIXTURES[i].name+"</span></li>";
-			console.log(pList);
-		}
-		$('.mutliSelect ul').append("<li><input type='checkbox' value='1' /><span>1</span><span>Product Page</span></li><li><input type='checkbox' value='2' /><span>2</span><span>Basket Page</span></li>");
-		$('.mutliSelect ul').append(pList);
-	},
 	actions: {
 		createElement: function() {
-		  // Get the page name by the newPage field
-		  var name = this.get('newEName');
-		  var selector = this.get('newESelector');
 
-		  if (!name.trim() || !selector.trim()) { return; }
+		  // Get the page name by the newPage field
+			var name = this.get('newEName');
+			var selector = this.get('newESelector');
+
+		  	if (!name.trim() || !selector.trim()) { return; }
+
+			var pages = [];
+
+			$('input[type=checkbox]:checked').each(function(i, selected){ 
+				pages[i] = $(selected).val(); 
+			});
 
 		  // Create the new Element model
-		  var element = this.store.createRecord('Element', {
+		  	var element = this.store.createRecord('Element', {
 
-		    id: parseInt(App.Element.FIXTURES[App.Element.FIXTURES.length-1].id)+1,
+		    	id: parseInt(App.Element.FIXTURES[App.Element.FIXTURES.length-1].id)+1,
 
-		    name: name,
-			selector: selector
-		  });
+			    name: name,
+				selector: selector,
+				pages: pages
+		  	});
 
-		  // Clear the "newName" text field
-		  this.set('newEName', '');
-		  this.set('newESelector', '');
+		  	/*Double binding the elements/pages through the IDs*/
+		  	for(var i = 0; i < pages.length; i++){
+				for(var ii = 0; ii < App.Page.FIXTURES.length; ii++){
 
-		  element.save();
+					if(pages[i] == App.Page.FIXTURES[ii].id){
+
+						App.Page.FIXTURES[ii].elements.push(element.id);
+					}
+				}
+			}
+
+		  	/*Clearing the fields.*/
+			this.set('newEName', '');
+			this.set('newESelector', '');
+			$('input[type=checkbox]:checked').attr('checked', false);
+			$('.checkedSelected').text(0);
+			$('.dropdown dd ul').hide('fast');
+
+			element.save();
 		}
 	}
 });

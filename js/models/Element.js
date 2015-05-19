@@ -4,8 +4,10 @@
 */
 App.Element = DS.Model.extend({
    	name: DS.attr('string'),
-	selector: DS.attr('string')
+	selector: DS.attr('string'),
+	pages: DS.attr('array')
 });
+
 
 /**
 *
@@ -15,13 +17,16 @@ App.Element.FIXTURES = [
 	{
 		id:1,
 	    name: 'Product ID',
-		selector: '#productName'
+		selector: '#productName',
+		pages: ['0','1']
 	},{
 		id:2,
 	    name: 'Unit Price',
-		selector: '.product .price'
+		selector: '.product .price',
+		pages: ['0','1']
 	},{
 		id:3,
 	    name: 'Produc image',
-		selector: '.product .image'
+		selector: '.product .image',
+		pages: ['0','1']
 	}];

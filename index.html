@@ -93,6 +93,15 @@
   <script type="text/x-handlebars" id="about">
     <div>
       <p>This is just a test for the future tool super powerful that we are building.</p>
+  <br>  <br>
+      <b>TODOS:</b>
+
+      <br>
+      bootstrap error messages on the footer of the creation forms
+      <br><br>      
+      <br>
+      persistance for when "reloading" things not dissappearing.
+      <br><br>
     </div>
   </script>
 
@@ -110,7 +119,7 @@
             <tbody>
              {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
-                  Page: <span class='pageLine'>{{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{elem.id}}</span></small></span>
+                  <span class='pageLine'>{{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}}<span class='muted'> pageId: <span>{{elem.id}}</span></span></span>
                 </td></tr>
               {{/each}}
                 <tr><td>
@@ -195,7 +204,11 @@
 
     <div class="below-the-fold">
       {{address}}
-    </div>
+    </div>   
+    <div class="intro">
+      Elements applied: <span>{{elements}}</span>
+    </div> 
+
   </script>
 
 
@@ -212,7 +225,7 @@
             <tbody>
              {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
-                  Page: <span class='pageLine'>{{#link-to 'element' elem}}<span>{{elem.name}}</span>{{/link-to}} <small class='muted'> pageId: <span>{{elem.id}}</span></small></span>
+                  <span class='pageLine'>{{#link-to 'element' elem}}<span>{{elem.name}}</span>{{/link-to}} <span class='muted'> pageId: <span>{{elem.id}}</span></span></span>
                 </td></tr>
               {{/each}}
                 <tr><td>
@@ -251,39 +264,50 @@
         <div class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Element selector:</label>
           <span class="pageInput">
-            {{input type="text" id="newESelector" class="form-control" placeholder="Page type" value=newESelector insert-newline="createElement"}}
+            {{input type="text" id="newESelector" class="form-control" placeholder="#exampleId" value=newESelector insert-newline="createElement"}}
           </span>
         </div>        
-      </div>    
-      <div class="row panel-body">
-        <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newPage">Pages to apply:</label>
-          <span class="pageInput">
-            {{view "select" content=currentPages value=pagesToApply}}
-          </span>
-        </div>        
-      </div>--      
+      </div>      
       <div class="row panel-body">
         <div class="col-xs-12 form-group pages-to-apply">
           <label class="inputLabel" for="newPage">Pages to apply:</label>
 
-          I want to hide this on a dropdown
-          <div class="mutliSelect">
-            <ul>
-              <li><input type='checkbox' value='0' /><span>Example ID</span> <span>Example Name</span></li>
-            </ul>
-          <!--/*We should do value={{page.id}} but it's not supported yet, so if we want value=ID we need to do it manually
-            <ul>
-              {{#each page in currentPages}}
+          I want to hide this on a dropdown. Add some dropdown icon
+          <dl class="dropdown"> 
+            
+              <dt>
+                <span class="multiSel">Select<span class="checkedSelected">0</span></span>   
+              </dt>
+            
+              <dd>
+                <div class="multiSelect">
+                  <ul>
+                    <!--/*
+                    Example of how it looks like:
+                    <li><input type='checkbox' value='0' /> Name:<span>Example Name</span> ID:<span>0</span></li>
+                    <li><input type='checkbox' value='1' /><span>1</span> <span>Product Page</span></li>
+                    <li><input type='checkbox' value='2' /><span>2</span> <span>Basket Page</span></li>*/-->
+                  </ul>
+                <!--/*We should do value={{page.id}} but it's not supported yet, so if we want value=ID we need to do it manually
+                  <ul>
+                    {{#each page in currentPages}}
 
-                  <li><input type="checkbox" value={{page.id}} /><span>{{page.id}}</span> <span>{{page.name}}</span></li>
-              {{/each}}
-            </ul>*/-->
-          </div>
+                        <li><input type="checkbox" value={{page.id}} /><span>{{page.id}}</span> <span>{{page.name}}</span></li>
+                    {{/each}}
+                  </ul>*/-->
+                </div>
+              </dd>
+          </dl>
         </div>        
       </div>
       <div class="row panel-footer">
-        <div class="col-xs-12">
+        <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">    
+          <div class="alert alert-danger alert-error">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <strong>Error!</strong> A problem has been occurred while submitting your data.
+          </div>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2">  
           <span class="pageInput pull-right">
             <button class="btn btn-primary btn-sm" {{action "createElement"}}>Create Element</button>
            </span>
@@ -302,6 +326,9 @@
 
     <div class="intro">
       {{selector}}
+    </div> 
+    <div class="intro">
+      Pages to apply: <span>{{pages}}</span>
     </div> 
 
   </script>

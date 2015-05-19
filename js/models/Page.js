@@ -5,7 +5,8 @@
 App.Page = DS.Model.extend({
    	name: DS.attr('string'),
 	pageType: DS.attr('string'),
-	address: DS.attr('string')
+	address: DS.attr('string'),
+	elements: DS.attr('array')
 });
 
 /**
@@ -17,12 +18,14 @@ App.Page.FIXTURES = [
 		id:1,
 	    name: 'Product Page',
 	    pageType: 'product', 
-		address: 'http://dummy.com/example'
+		address: 'http://dummy.com/example',
+		elements: ['1']
 	},{
 		id:2,
 	    name: 'Basket Page',
 	    pageType: 'basket', 
-		address: 'http://dummy.com/example'
+		address: 'http://dummy.com/example',
+		elements: ['6']
 	}];
 
 /*[:TODO] - THIS ATTS NEED SUBCLASIFICATION!!! 

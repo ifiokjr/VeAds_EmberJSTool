@@ -6,37 +6,12 @@ App = Ember.Application.create();
 */
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
-/**
-*
-* Controller associated to the default template. "Static" way of binding values.
-*/
-App.ApplicationController = Ember.Controller.extend({
-
- 	author: "Ve_TechTeam. JS",
- 	flexID : '',
- 	GenieJC : '',
-	ConversionID : '',
-	SegProdPage : '',
-	SegCompPage : '',
-	SegROSPage : '',
-	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
-	selectedPageType : 'product'
-});
-
-
-App.IndexController = Ember.Controller.extend({
-
-  appName: "VeAds",
-  companyName: "VeInteractive"
-});
 
 
 /**
 *
 * Definition of an own type
 */
-
-
 DS.ArrayTransform = DS.Transform.extend({
   deserialize: function(serialized) {
     return (Ember.typeOf(serialized) == "array")
@@ -60,24 +35,76 @@ DS.ArrayTransform = DS.Transform.extend({
 
 App.register("transform:array", DS.ArrayTransform);
 
+
 /**
 *
 * CONTROLLERS.
 * IMPORTANT: The page controllers are related to the ROUTING names
+* Controller associated to the default template. "Static" way of binding values.
 */
+
+/*Creation of objects in order to use the double binding.*/
+App.applicationObject = Ember.Object.create({
+
+ 	flexID : 'blabla',
+ 	GenieJC : '',
+	ConversionID : '',
+	SegProdPage : '',
+	SegCompPage : '',
+	SegROSPage : ''
+});
+
+/*Binding the controller's properties to the object*/
+App.ApplicationController = Ember.Controller.extend({
+
+ 	author: "Ve_TechTeam. JS",
+ 	flexID : App.applicationObject.get('flexID'),
+ 	GenieJC : App.applicationObject.get('GenieJC'),
+	ConversionID : App.applicationObject.get('ConversionID'),
+	SegProdPage : App.applicationObject.get('SegProdPage'),
+	SegCompPage : App.applicationObject.get('SegCompPage'),
+	SegROSPage : App.applicationObject.get('SegROSPage')
+});
+
+
+App.ConfigController = Ember.ArrayController.extend({
+
+	config: {
+		flexID: App.applicationObject.get('flexID'),
+	 	GenieJC : App.applicationObject.get('GenieJC'),
+		ConversionID : App.applicationObject.get('ConversionID'),
+		SegProdPage : App.applicationObject.get('SegProdPage'),
+		SegCompPage : App.applicationObject.get('SegCompPage'),
+		SegROSPage : App.applicationObject.get('SegROSPage'),
+		pages:[],
+		dataElements:[]
+	}
+});
+
+Ember.run.sync();
+
+App.IndexController = Ember.Controller.extend({
+
+  appName: "VeAds",
+  companyName: "VeInteractive"
+});
+
 App.PagesIndexController = Ember.ArrayController.extend({
 
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
 	actions: {
 		createPage: function() {
 		// Get the page name by the newPage field
+
 			var name = this.get('newPName');
-			// var type = this.selectedPageType;
-			// var type = this.get('newPType');
 			var type = this.get('selectedPageType');
 			var url = this.get('newPUrl');
 
-			if (!name.trim() || !type.trim() || !url.trim()) { return; }
+			if (name === undefined || type === undefined || url === undefined) { 
+
+		  		displayAlert('pages-index','Fill up all the fields please...','danger');
+		  		return; 
+		  	}
 
 			// Create the new Page model
 			var page = this.store.createRecord('Page', {
@@ -93,7 +120,8 @@ App.PagesIndexController = Ember.ArrayController.extend({
 			// Clear the "newName" text field
 			this.set('newPName', '');
 			this.set('newPType', '');
-			this.set('newPUrl', '');
+			this.set('newPUrl', '');			
+			$('.alert').alert('close');
 
 			// Save the new model
 			/* Save returns a promise. These are used to handle the exit or failure of the saving.
@@ -110,7 +138,9 @@ App.PagesIndexController = Ember.ArrayController.extend({
 
 			     post.save().then(transitionToPost).catch(failure):
 			*/
+
 			page.save();
+			displayAlert('pages-index','This page is created without any elements associated.','warning');
 		}
   	}
 });
@@ -160,7 +190,17 @@ App.ElementsIndexController = Ember.ArrayController.extend({
 			var name = this.get('newEName');
 			var selector = this.get('newESelector');
 
-		  	if (!name.trim() || !selector.trim()) { return; }
+		  	if (name === undefined || selector === undefined) { 
+
+		  		displayAlert('element-index','Fill up all the fields please...','danger');
+		  		return; 
+		  	}
+
+		  	if ($('input[type=checkbox]:checked').length < 1) { 
+
+		  		displayAlert('element-index','Select at least one page where to apply this element please...','danger');
+		  		return; 
+		  	}
 
 			var pages = [];
 
@@ -195,8 +235,34 @@ App.ElementsIndexController = Ember.ArrayController.extend({
 			$('input[type=checkbox]:checked').attr('checked', false);
 			$('.checkedSelected').text(0);
 			$('.dropdown dd ul').hide('fast');
+			$('.alert').alert('close');
 
 			element.save();
 		}
 	}
 });
+
+
+/**
+* OTHER FUNCTIONS
+*/
+function displayAlert(element, message, status){
+
+	var messageTitle = '';
+
+	switch(status){
+
+		case 'danger':
+			messageTitle = 'Error';
+			break;
+		case 'warning':
+			messageTitle = 'Warning';
+			break;
+	}
+
+	var alert = '<div class="alert alert-'+ status +' alert-error">'+
+                	'<a href="#" class="close" data-dismiss="alert">&times;</a>'+
+                	'<strong>'+ messageTitle +'!</strong> <span>'+ message +'</span></div>';
+
+    $('.'+element+' .alert-slot').append(alert);
+}

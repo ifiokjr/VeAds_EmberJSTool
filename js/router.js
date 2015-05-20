@@ -15,6 +15,7 @@ App.Router.map(function() {
     this.route('index');
     this.resource('element', {path: ':element_id'});
   });
+  this.resource('config');
 });
 
 /**

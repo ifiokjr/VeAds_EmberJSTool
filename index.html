@@ -13,15 +13,25 @@
   <!-- This section is always rendered -->
   <!-- Each one of the script sections is called template. data-template-name="application"-->
   <script type="text/x-handlebars">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
+
+    <nav role="navigation" class="navbar navbar-default">
+        <div class="navbar-header">          
+          <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
           <a class="navbar-brand" href="#">VeAds Congfigurator</a>
-          <ul class="nav navbar-nav navbar-left">
+        </div>
+        <div id="navbarCollapse" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
             <li>{{#link-to 'about'}}About{{/link-to}}</li>
             <li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
             <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>
+            <li>{{#link-to 'config'}}Config{{/link-to}}</li>
           </ul>
-      </div>
+        </div>
     </nav>
 
     <!-- /*The outlet changes all he content of the parent div*/  -->
@@ -84,29 +94,39 @@
   </script>
 
 
+<!-- ***** -->
 <!-- INDEX -->
+<!-- ***** -->
   <script type="text/x-handlebars" id="index">
     Welcome!! This is a <strong>{{controller.appName}}</strong> Tool for <strong>{{controller.companyName}}</strong> and this is the footer section.
   </script>
 
+<!-- ***** -->
+<!-- ABOUT -->
+<!-- ***** -->
    <!-- Ember will match the route about with the about id. -->
   <script type="text/x-handlebars" id="about">
     <div>
       <p>This is just a test for the future tool super powerful that we are building.</p>
   <br>  <br>
       <b>TODOS:</b>
-
-      <br>
-      bootstrap error messages on the footer of the creation forms
-      <br><br>      
-      <br>
+ 
+      <br><br>     
+      creation of the object. Now in config we can show the values.
+      <br>Investigate how the bindings work, because when changing value doesnt change.
+      <br><br>
       persistance for when "reloading" things not dissappearing.
+      <br><br>
+      possibility of editing and removing elements / pages
+      <br><br>
+      calculation of ID of pages and elements properly. currently is .length+1, but if we allow removal / editing, id will be duplicated. 
       <br><br>
     </div>
   </script>
 
-
+<!-- ***** -->
 <!-- PAGES -->
+<!-- ***** -->
   <script type="text/x-handlebars" id="pages">
         <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
     <div class="container-fluid">
@@ -140,7 +160,7 @@
 
   <script type="text/x-handlebars" id="pages/index">
 
-    <div class="container-fluid panel panel-primary">
+    <div class="container-fluid panel panel-primary pages-index">
       <div class="row panel-heading">
         <div class="col-xs-12">
           <h4 class="panel-title">New Page Creation</h4>
@@ -181,11 +201,13 @@
         </div>        
       </div>      
       <div class="row panel-footer">
-        <div class="col-xs-12">
+        <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10 alert-slot">    
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2">  
           <span class="pageInput pull-right">
             <button class="btn btn-primary btn-sm" {{action "createPage"}} >Create Page</button>
-           </span>
-        </div>        
+          </span>      
+        </div>      
       </div>
     </div>
   </script>
@@ -212,12 +234,14 @@
   </script>
 
 
+<!-- ******** -->
 <!-- ELEMENTS -->
+<!-- ******** -->
   <script type="text/x-handlebars" id="elements">
         <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-xs-12 col-sm-4 col-md-3">
           <table class="table">
             <thead>
               <tr><th><h4>Recent Elements</h4></th></tr>
@@ -236,7 +260,7 @@
             </tbody>
           </table>
         </div>        
-        <div class="col-xs-9">
+        <div class="col-xs-12 col-sm-8 col-md-9">
          {{outlet}}
         </div>
       </div>
@@ -244,12 +268,12 @@
   </script>
 
   <script type="text/x-handlebars" id="elements/index">
-      <div class="container-fluid panel panel-primary">
-        <div class="row panel-heading">
-          <div class="col-xs-12">
-            <h4 class="panel-title">New Element Creation</h4>
-          </div> 
+    <div class="container-fluid panel panel-primary element-index">
+      <div class="row panel-heading">
+        <div class="col-xs-12">
+          <h4 class="panel-title">New Element Creation</h4>
         </div> 
+      </div> 
       <div class="row panel-body">
         <div class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Name:</label>
@@ -301,11 +325,7 @@
         </div>        
       </div>
       <div class="row panel-footer">
-        <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10">    
-          <div class="alert alert-danger alert-error">
-              <a href="#" class="close" data-dismiss="alert">&times;</a>
-              <strong>Error!</strong> A problem has been occurred while submitting your data.
-          </div>
+        <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10 alert-slot">    
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2">  
           <span class="pageInput pull-right">
@@ -333,44 +353,28 @@
 
   </script>
 
+<!-- ****** -->
+<!-- CONFIG -->
+<!-- ****** -->
+  <script type="text/x-handlebars" id="config">
 
-    <!--/*<script type="text/x-handlebars" id="newPage">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Name:</label>
-          <span class="pageInput">
-            {{input type="text" id="newName" placeholder="New name" value=newName insert-newline="createPage"}}
-           </span>
-        </div>        
-      </div>
+    <div class="modelTitle">
 
-      /*[:TODO] - EMBER DOESN'T SUPPORT DROPDOWN SELECT, IT HAS TO BE CUSTOM, LATER ON ALSO THE SUPPORT FOR INPUT-URL*/
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Page type:</label>
-          <span class="pageInput">
-            {{input type="text" id="newType" placeholder="Page type" value=newType insert-newline="createPage"}}
-          </span>
-        </div>        
-      </div>
-      <div class="row">
-        <div class="col-xs-10">
-          <label for="newPage">Url:</label>
-          <span class="pageInput">
-              {{input type="text" id="newUrl" placeholder="Url of the page" value=newUrl insert-newline="createPage"}}
-          </span>
-        </div>        
-      </div>      
-      <div class="row">
-        <div class="col-xs-10">
-          <span class="pageInput">
-            <button class="btn btn-primary btn-sm" {{action "createPage"}} >Create</button>
-           </span>
-        </div>        
-      </div>
-    </div>
-  </script>*/-->
+      <h1>Configuration Object</h1>
+    </div>    
+    <div class="intro">
+      <pre>
+        config: {
+          flexID:<span>{{config.flexID}}</span>,
+          GenieJC:<span>{{config.GenieJC}}</span>,
+          ConversionID:<span>{{config.ConversionID}}</span>,
+          SegProdPage:<span>{{config.SegProdPage}}</span>,
+          SegCompPage:<span>{{config.SegCompPage}}</span>,
+          SegROSPage:<span>{{config.SegROSPage}}</span>,
+        }
+      </pre>
+    </div> 
+  </script>
 
   <script src="js/libs/jquery-1.10.2.js"></script>
   <script src="js/libs/handlebars-v1.3.0.js"></script>

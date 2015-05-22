@@ -7,7 +7,6 @@ App = Ember.Application.create();
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
 
-
 /**
 *
 * Definition of an own type
@@ -42,19 +41,60 @@ App.register("transform:array", DS.ArrayTransform);
 * IMPORTANT: The page controllers are related to the ROUTING names
 * Controller associated to the default template. "Static" way of binding values.
 */
+App.ApplicationController = Ember.Controller.extend({
 
-/*Creation of objects in order to use the double binding.*/
-App.applicationObject = Ember.Object.create({
+ 	author: "Ve_TechTeam. JS"
+});
 
- 	flexID : 'blabla',
+App.ConfigController = Ember.ArrayController.extend({
+
+	flexID: '',
  	GenieJC : '',
 	ConversionID : '',
 	SegProdPage : '',
 	SegCompPage : '',
-	SegROSPage : ''
+	SegROSPage : '',
+	pages: function(){
+	
+		var array = [];
+		var page = {};
+	 	
+		/*ENCAPSULATE ON A FUNCTION FOR THE PROBLEM OF THE VARIABLES*/
+	 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
+
+	 		page.id = App.Page.FIXTURES[j].id;
+	 		page.name = App.Page.FIXTURES[j].name;
+	 		page.pageType = App.Page.FIXTURES[j].pageType;
+	 		page.address = App.Page.FIXTURES[j].address;
+	 		page.elements = App.Page.FIXTURES[j].elements;
+
+	 		array.push(page);
+	 		page = {};
+		}
+		return array;
+	}.property('pages'),
+	elements: function(){
+
+		var array = [];
+		var element = {};
+	 	for(var z = 0; z<App.Element.FIXTURES.length; z++){
+
+	 		element.id = App.Element.FIXTURES[z].id;
+	 		element.name = App.Element.FIXTURES[z].name;
+	 		element.selector = App.Element.FIXTURES[z].selector;
+	 		element.pages = App.Element.FIXTURES[z].pages;
+
+	 		array.push(element);
+	 		element = {};
+		}
+
+		return array;
+	}.property('elements')
 });
 
-/*Binding the controller's properties to the object*/
+
+/*
+//Binding the controller's properties to the object
 App.ApplicationController = Ember.Controller.extend({
 
  	author: "Ve_TechTeam. JS",
@@ -69,19 +109,44 @@ App.ApplicationController = Ember.Controller.extend({
 
 App.ConfigController = Ember.ArrayController.extend({
 
-	config: {
-		flexID: App.applicationObject.get('flexID'),
-	 	GenieJC : App.applicationObject.get('GenieJC'),
-		ConversionID : App.applicationObject.get('ConversionID'),
-		SegProdPage : App.applicationObject.get('SegProdPage'),
-		SegCompPage : App.applicationObject.get('SegCompPage'),
-		SegROSPage : App.applicationObject.get('SegROSPage'),
-		pages:[],
-		dataElements:[]
-	}
-});
+	init: function(){
 
-Ember.run.sync();
+		this._super(); //Necessary if we override init.		
+
+		this.config.flexID = App.applicationObject.get('flexID');
+		this.config.GenieJC = App.applicationObject.get('GenieJC');
+		this.config.ConversionID = App.applicationObject.get('ConversionID');
+		this.config.SegProdPage = App.applicationObject.get('SegProdPage');
+		this.config.SegCompPage = App.applicationObject.get('SegCompPage');
+		this.config.SegROSPage = App.applicationObject.get('SegROSPage');
+		this.config.pages = (function(){
+	
+				var result = '[';
+			 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
+
+			 		result += '{id:'+App.Page.FIXTURES[j].id+', '+
+			 		'name:"'+App.Page.FIXTURES[j].name+'", '+
+			 		'pageType:"'+App.Page.FIXTURES[j].pageType+'", '+ 
+			 		'address:"'+App.Page.FIXTURES[j].address+'", '+ //This will be an object in the future
+					"elements:["+ App.Page.FIXTURES[j].elements+"]}";
+
+					if(j < App.Page.FIXTURES.length-1){ result += ',';}
+				}
+				return result+']';
+			})();
+	},
+
+	config: {
+		flexID: '',
+	 	GenieJC : '',
+		ConversionID : '',
+		SegProdPage : '',
+		SegCompPage : '',
+		SegROSPage : '',
+		pages: ''
+	}
+});*/
+
 
 App.IndexController = Ember.Controller.extend({
 

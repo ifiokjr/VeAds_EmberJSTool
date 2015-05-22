@@ -19,7 +19,7 @@ App.Page.FIXTURES = [
 	    name: 'Product Page',
 	    pageType: 'product', 
 		address: 'http://dummy.com/example',
-		elements: ['1']
+		elements: ['1','8']
 	},{
 		id:2,
 	    name: 'Basket Page',
@@ -41,3 +41,14 @@ App.Page.FIXTURES = [
       sharedParams = [{}]    
     },
     dataElementIds:[1,2]*/
+
+
+    /*
+    for(var j = 0; j<App.Page.FIXTURES.length; j++){
+ 		result += '{id:'+App.Page.FIXTURES[j].id+', '+
+ 		'name:"'+App.Page.FIXTURES[j].name+'", '+
+ 		'pageType:"'+App.Page.FIXTURES[j].pageType+'", '+ 
+ 		'address:"'+App.Page.FIXTURES[j].address+'", '+ //This will be an object in the future
+		"elements:["+ App.Page.FIXTURES[j].elements+"]}";
+	}
+*/

@@ -12,7 +12,7 @@
 
   <!-- This section is always rendered -->
   <!-- Each one of the script sections is called template. data-template-name="application"-->
-  <script type="text/x-handlebars">
+  <script type="text/x-handlebars" id="application">
 
     <nav role="navigation" class="navbar navbar-default">
         <div class="navbar-header">          
@@ -40,11 +40,12 @@
     </div>
 
     <footer class="footer">
-      <div class="container-fluid panel panel-primary">
+     <!--/* <div class="container-fluid panel panel-primary">
         <div class="row panel-heading">
           <div class="col-xs-12">
 
             <h4 class="panel-title">Global features:</h4>
+            flexID: <span>{{flexID}}</span>, <span>{{flexID}}</span> 
           </div>   
         </div>   
         <div class="row panel-body">    
@@ -85,7 +86,7 @@
             </div>        
           </div>
         </div>
-      </div>
+      </div>*/-->
 
 
       by <strong>{{controller.author}}</strong>.
@@ -111,9 +112,10 @@
   <br>  <br>
       <b>TODOS:</b>
  
-      <br><br>     
-      creation of the object. Now in config we can show the values.
-      <br>Investigate how the bindings work, because when changing value doesnt change.
+       <br><br>  
+       config object rendered correctly. Missing rendering the computed property after adding fixtures.    
+       <br><br>     
+       Creation of the address as an object, and modification of the display of the object
       <br><br>
       persistance for when "reloading" things not dissappearing.
       <br><br>
@@ -362,17 +364,93 @@
 
       <h1>Configuration Object</h1>
     </div>    
-    <div class="intro">
-      <pre>
-        config: {
-          flexID:<span>{{config.flexID}}</span>,
-          GenieJC:<span>{{config.GenieJC}}</span>,
-          ConversionID:<span>{{config.ConversionID}}</span>,
-          SegProdPage:<span>{{config.SegProdPage}}</span>,
-          SegCompPage:<span>{{config.SegCompPage}}</span>,
-          SegROSPage:<span>{{config.SegROSPage}}</span>,
-        }
-      </pre>
+    <div class="intro config">  
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-12 col-sm-5 col-md-4">
+            <div class="container-fluid panel panel-primary">
+              <div class="row panel-heading">
+                <div class="col-xs-12">
+
+                  <h4 class="panel-title">Global features:</h4>
+                </div>   
+              </div>   
+              <div class="row panel-body">    
+                <div class="col-xs-12 form-group">
+                    
+                  <label class="inputLabel">Flex ID:</label> 
+                  <span> {{input class="form-control" type="text" id="flexID" placeholder="6 Digit code" value=flexID}}</span> 
+                </div>
+                <div class="col-xs-12 form-group">
+
+                  <label class="inputLabel">Genie J.Code:</label>
+                  <span> {{input class="form-control" type="text" id='GenieJC' placeholder="aBceDelkj" value=GenieJC}}</span> 
+                </div>
+                <div class="col-xs-12 form-group">
+
+                  <label class="inputLabel">Conversion ID:</label> 
+                  <span>{{input class="form-control" type="text" id='ConversionID' placeholder="Conversion ID" value=ConversionID}}</span> 
+                </div>
+                <div class="col-xs-12 form-group">
+
+                  <label class="inputLabel">Segment IDs:</label>
+                  <div class="container-fluid">
+                    <div class="row">
+                          <div class="col-xs-12">
+                            {{input class="form-control" type="text" id='SegProdPage' placeholder="Product P." value=SegProdPage}}
+                          </div>  
+                      </div>  
+                    <div class="row">
+                      <div class="col-xs-12">
+                        {{input class="form-control" type="text" id='SegCompPage' placeholder="Complete P." value=SegCompPage}}
+                      </div>
+                    </div>  
+                    <div class="row">                
+                      <div class="col-xs-12">
+                        {{input class="form-control" type="text" id='SegROSPage' placeholder="ROS Page" value=SegROSPage}}
+                      </div>
+                    </div>
+                  </div>        
+                </div>
+              </div>
+            </div>
+          </div>        
+          <div class="col-xs-12 col-sm-7 col-md-8">
+            <span class="configBox">
+
+              <span class="configObject">config: {
+                <span class="configObject">flexID:<span>{{flexID}}</span>,</span>
+                <span class="configObject">GenieJC:<span>{{GenieJC}}</span>,</span>
+                <span class="configObject">ConversionID:<span>{{ConversionID}}</span>,</span>
+                <span class="configObject">segProdPage:<span>{{SegProdPage}}</span>,</span>
+                <span class="configObject">segCompPage:<span>{{SegCompPage}}</span>,</span>
+                <span class="configObject">segROSPage:<span>{{SegROSPage}}</span>,</span>
+                <span class="configObject">pages:[
+                  <span>{{#each elem in pages}}
+                    <span class="configObject">{id:<span>{{elem.id}}</span>,</span>
+                    <span class="configObject">name:<span>{{elem.name}}</span>,</span>
+                    <span class="configObject">pageType:<span>{{elem.pageType}}</span>,</span>
+                    <span class="configObject">address:<span>{{elem.address}}</span>,</span>
+                    <span class="configObject">elements:[<span>{{elem.elements}}</span>]}</span>
+                    <span class="configObject configObjectSeparator">,</span>
+                  {{/each}}
+                  </span>],
+                </span>  
+                <span class="configObject">elements:[
+                  <span>{{#each elem in elements}}
+                    <span class="configObject">{id:<span>{{elem.id}}</span>,</span>
+                    <span class="configObject">name:<span>{{elem.name}}</span>,</span>
+                    <span class="configObject">pageType:<span>{{elem.selector}}</span>,</span>
+                    <span class="configObject">pages:[<span>{{elem.pages}}</span>]}</span>
+                    <span class="configObject configObjectSeparator">,</span>
+                  {{/each}}
+                  </span>]
+                </span>               
+              }</span>     
+            </span>
+          </div> 
+        </div> 
+      </div> 
     </div> 
   </script>
 

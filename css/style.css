@@ -8,15 +8,6 @@ html, body{
 	height:100%;
 }
 
-/*.container-fluid{
-
-	border:1px solid red;
-}
-
-.row{
-
-	border:1px solid yellow;
-}*/
 
 /**
 * NAVBAR STYLES
@@ -124,6 +115,38 @@ select option.ember-view{
 	padding: 10px;
 }
 
+/**
+* Tab panel
+*/
+.nav-tabs li.active a{
+
+	background-color: #f5f5f5 !important;
+}
+
+.tab-content{
+
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	border-top-color:transparent;
+}
+.tab-pane{
+
+	padding: 20px;
+}
+.tab-pane .container-fluid{
+
+	padding: 0px;
+}
+.tab-pane .pageInput{
+
+	margin-bottom: 25px;
+	display: block;
+}
+.tab-pane .row .pageInput{
+
+	margin-bottom: 0px;
+}
+
 
 /**
 * DROPDOWN
@@ -198,6 +221,7 @@ select option.ember-view{
 			margin-left: auto;
 		}
 	}
+
 /**
 * ERRORS
 */
@@ -274,6 +298,7 @@ select option.ember-view{
 
 	display:none;
 }
+
 /**
 * FOOTER
 */

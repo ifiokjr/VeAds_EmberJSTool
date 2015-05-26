@@ -46,14 +46,18 @@ App.ApplicationController = Ember.Controller.extend({
  	author: "Ve_TechTeam. JS"
 });
 
-App.ConfigController = Ember.ArrayController.extend({
+App.ConfigView = Ember.View.extend({
 
 	flexID: '',
  	GenieJC : '',
 	ConversionID : '',
 	SegProdPage : '',
 	SegCompPage : '',
-	SegROSPage : '',
+	SegROSPage : ''
+});
+
+App.ConfigController = Ember.ArrayController.extend({
+
 	pages: function(){
 	
 		var array = [];
@@ -89,63 +93,9 @@ App.ConfigController = Ember.ArrayController.extend({
 		}
 
 		return array;
-	}.property('elements')
-});
-
-
-/*
-//Binding the controller's properties to the object
-App.ApplicationController = Ember.Controller.extend({
-
- 	author: "Ve_TechTeam. JS",
- 	flexID : App.applicationObject.get('flexID'),
- 	GenieJC : App.applicationObject.get('GenieJC'),
-	ConversionID : App.applicationObject.get('ConversionID'),
-	SegProdPage : App.applicationObject.get('SegProdPage'),
-	SegCompPage : App.applicationObject.get('SegCompPage'),
-	SegROSPage : App.applicationObject.get('SegROSPage')
-});
-
-
-App.ConfigController = Ember.ArrayController.extend({
-
-	init: function(){
-
-		this._super(); //Necessary if we override init.		
-
-		this.config.flexID = App.applicationObject.get('flexID');
-		this.config.GenieJC = App.applicationObject.get('GenieJC');
-		this.config.ConversionID = App.applicationObject.get('ConversionID');
-		this.config.SegProdPage = App.applicationObject.get('SegProdPage');
-		this.config.SegCompPage = App.applicationObject.get('SegCompPage');
-		this.config.SegROSPage = App.applicationObject.get('SegROSPage');
-		this.config.pages = (function(){
+	}.property('elements'),
 	
-				var result = '[';
-			 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
-
-			 		result += '{id:'+App.Page.FIXTURES[j].id+', '+
-			 		'name:"'+App.Page.FIXTURES[j].name+'", '+
-			 		'pageType:"'+App.Page.FIXTURES[j].pageType+'", '+ 
-			 		'address:"'+App.Page.FIXTURES[j].address+'", '+ //This will be an object in the future
-					"elements:["+ App.Page.FIXTURES[j].elements+"]}";
-
-					if(j < App.Page.FIXTURES.length-1){ result += ',';}
-				}
-				return result+']';
-			})();
-	},
-
-	config: {
-		flexID: '',
-	 	GenieJC : '',
-		ConversionID : '',
-		SegProdPage : '',
-		SegCompPage : '',
-		SegROSPage : '',
-		pages: ''
-	}
-});*/
+});
 
 
 App.IndexController = Ember.Controller.extend({
@@ -154,8 +104,11 @@ App.IndexController = Ember.Controller.extend({
   companyName: "VeInteractive"
 });
 
+
 App.PagesIndexController = Ember.ArrayController.extend({
 
+	newPkey : '',
+	newPvalue : '',
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
 	actions: {
 		createPage: function() {
@@ -163,7 +116,7 @@ App.PagesIndexController = Ember.ArrayController.extend({
 
 			var name = this.get('newPName');
 			var type = this.get('selectedPageType');
-			var url = this.get('newPUrl');
+			var url = this.get('newPUrlOld');
 
 			if (name === undefined || type === undefined || url === undefined) { 
 
@@ -185,7 +138,7 @@ App.PagesIndexController = Ember.ArrayController.extend({
 			// Clear the "newName" text field
 			this.set('newPName', '');
 			this.set('newPType', '');
-			this.set('newPUrl', '');			
+			this.set('newPUrlOld', '');			
 			$('.alert').alert('close');
 
 			// Save the new model
@@ -206,6 +159,44 @@ App.PagesIndexController = Ember.ArrayController.extend({
 
 			page.save();
 			displayAlert('pages-index','This page is created without any elements associated.','warning');
+		},
+		createAddress : function() {
+
+			var url = this.get('newPUrl');
+			var key = this.get('newPkey');
+			var value = this.get('newPvalue');
+
+			console.log('url: ' +url+ ' key: ' +key+ ' value: ' + value);
+
+			if (url === undefined || url == '') { 
+
+		  		displayAlert('pages-index','Indicate a Url please...','danger');
+		  		return; 
+		  	}
+		  	else if(!IsURL(url)){
+
+
+		  		displayAlert('pages-index','Url needs to be a valid url (protocol included)','danger');
+		  		return; 
+		  	}
+		  	else if((key !== "" && value === "") || (value !== "" && key === "")){
+
+		  		displayAlert('pages-index','A parameter needs a key and a value FIRST','danger');
+		  		return; 
+		  	}
+
+		  	var newDiv = '<div role="tabpanel" class="tab-pane" id="tab'+ $('.tab-pane').length +'">'+
+
+                '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput">'+ url + '</span>'+
+                '<label class="inputLabel" for="newAddres">Params:</label><span class="pageInput">'+ key + ' = '+ value +'</span>'+
+		  	'</div>';
+
+		  	$('.nav-tabs').append('<li role="presentation"><a href="#tab'+ $('.tab-pane').length +'" aria-controls="tab'+ $('.tab-pane').length+'" role="tab" data-toggle="tab">'+$('.tab-pane').length+'</a></li>');
+		  	$('.tab-content').append(newDiv);
+
+		  	this.set('newPUrl', '');
+			this.set('newPkey', '');
+			this.set('newPvalue', '');
 		}
   	}
 });
@@ -330,4 +321,10 @@ function displayAlert(element, message, status){
                 	'<strong>'+ messageTitle +'!</strong> <span>'+ message +'</span></div>';
 
     $('.'+element+' .alert-slot').append(alert);
+}
+
+function IsURL(url) {
+
+	var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+	return regexp.test(url);
 }

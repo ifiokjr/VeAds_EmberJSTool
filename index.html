@@ -114,8 +114,6 @@
  
        <br><br>  
        config object rendered correctly. Missing rendering the computed property after adding fixtures. If i cant bind it, button generate that sets the properties, otherwiser try timeout.  
-       <br><br>     
-       View of address as a object done. missing creation and insertion to the fixtures.
       <br><br>
       persistance for when "reloading" things not dissappearing.
       <br><br>
@@ -172,36 +170,18 @@
         <div class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Name:</label>
           <span class="pageInput">
-            {{input type="text" class="form-control" id="newPName" placeholder="New name" value=newPName insert-newline="createPage"}}
+            {{input type="text" class="form-control" id="newPName" placeholder="New name"}}
            </span>
         </div>        
       </div>
-
-      <!--/*[:TODO] - EMBER DOESN'T SUPPORT DROPDOWN SELECT, IT HAS TO BE CUSTOM, LATER ON ALSO THE SUPPORT FOR INPUT-URL*/-->
-      <!--/*<div class="row panel-body">
-        <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newPage">Page type:</label>
-          <span class="pageInput">
-            {{input type="text" id="newPType" class="form-control" placeholder="Page type" value=newPType insert-newline="createPage"}}
-          </span>
-        </div>        
-      </div>*/-->
       <div class="row panel-body">
-        <div class="col-xs-12 form-group">
+        <div id="newTypeElements" class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Page type Selection:</label>
           <span class="pageInput">
-            {{view "select" content=pageTypeElements value=selectedPageType}}
+            {{view "select" content=pageTypeElements}}
           </span>
         </div>        
       </div>
-      <div class="row panel-body">
-        <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newPage">Url:</label>
-          <span class="pageInput">
-              {{input type="text" id="newPUrlOld" class="form-control" placeholder="Url of the page" value=newPUrlOld insert-newline="createPage"}}
-          </span>
-        </div>        
-      </div> 
       <div class="row panel-body">
         <div class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Address:</label>
@@ -210,9 +190,6 @@
             <!-- /*Nav tabs*/ -->
             <ul class="nav nav-tabs" role="tablist" id="addressesTab">
               <li role="presentation" class="active"><a href="#newAddress" aria-controls="newAddress" role="tab" data-toggle="tab">New</a></li>
-              <!--/*<li role="presentation"><a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">Profile</a></li>
-              <li role="presentation"><a href="#tab3" aria-controls="tab3" role="tab" data-toggle="tab">Messages</a></li>
-              <li role="presentation"><a href="#tab4" aria-controls="tab4" role="tab" data-toggle="tab">Settings</a></li>*/-->
             </ul>
 
             <!-- /*Tab panes*/ -->
@@ -250,9 +227,6 @@
                   </div>
                 </div>
               </div>
-              <!--// <div role="tabpanel" class="tab-pane" id="tab1">...</div>
-              // <div role="tabpanel" class="tab-pane" id="tab2">...</div>
-              // <div role="tabpanel" class="tab-pane" id="tab3">...</div>-->
             </div> 
           </div> 
         </div>        
@@ -283,9 +257,14 @@
 
     <div class="below-the-fold">
       {{address}}
+    </div> 
+    <div class="below-the-fold">
+      {{#each elem in addresses}} <!--/*These are the pages defined on the route*/-->
+          <strong>Url:</strong><span>{{elem.url}}</span> <strong>Params:</strong><span>{{elem.params}}</span>
+      {{/each}}
     </div>   
     <div class="intro">
-      Elements applied: <span>{{elements}}</span>
+      Elements applied: [<span>{{elements}}</span>]
     </div> 
 
   </script>

@@ -46,6 +46,12 @@ App.ApplicationController = Ember.Controller.extend({
  	author: "Ve_TechTeam. JS"
 });
 
+App.IndexController = Ember.Controller.extend({
+
+  appName: "VeAds",
+  companyName: "VeInteractive"
+});
+
 App.ConfigView = Ember.View.extend({
 
 	flexID: '',
@@ -56,10 +62,17 @@ App.ConfigView = Ember.View.extend({
 	SegROSPage : ''
 });
 
-App.ConfigController = Ember.ArrayController.extend({
+App.ConfigView = Ember.View.extend({
+  didInsertElement : function(){//Function executed after the object is inserted on the template
 
+  	console.log('afterinsertelement');
+    this._super();
+  }
+});
+
+App.ConfigController = Ember.ArrayController.extend({
 	pages: function(){
-	
+
 		var array = [];
 		var page = {};
 	 	
@@ -75,7 +88,9 @@ App.ConfigController = Ember.ArrayController.extend({
 	 		array.push(page);
 	 		page = {};
 		}
+
 		return array;
+
 	}.property('pages'),
 	elements: function(){
 
@@ -93,15 +108,8 @@ App.ConfigController = Ember.ArrayController.extend({
 		}
 
 		return array;
-	}.property('elements'),
+	}.property('elements')
 	
-});
-
-
-App.IndexController = Ember.Controller.extend({
-
-  appName: "VeAds",
-  companyName: "VeInteractive"
 });
 
 
@@ -111,51 +119,45 @@ App.PagesIndexController = Ember.ArrayController.extend({
 	newPvalue : '',
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
 	actions: {
-		createPage: function() {
-		// Get the page name by the newPage field
+		insertPage: function() {
 
-			var name = this.get('newPName');
-			var type = this.get('selectedPageType');
-			var url = this.get('newPUrlOld');
+			var name = $('#newPName').val();
+			var type = $('#newTypeElements select option:selected').val();
 
-			if (name === undefined || type === undefined || url === undefined) { 
+			var ad = [];
+
+			$('.tab-pane:not(:first)').each(function(){
+
+				ad.push({url:$('#'+$(this).attr('id')+' .addressUrl').text(),params:$('#'+$(this).attr('id')+' .addressParams').text()});
+			});
+
+			console.log(name);
+			console.log(type);
+
+			/*if (name === undefined || type === undefined || ad.length == 0) { 
 
 		  		displayAlert('pages-index','Fill up all the fields please...','danger');
 		  		return; 
-		  	}
+		  	}*/
 
-			// Create the new Page model
+
 			var page = this.store.createRecord('Page', {
 
 				id: parseInt(App.Page.FIXTURES[App.Page.FIXTURES.length-1].id)+1,
-				// id: $('.pageLine').length+1,
 				name: name,
 				pageType: type,
-				address: url,
+				addresses: ad,
 				elements: ['Elements not selected']
 			});
 
+
 			// Clear the "newName" text field
 			this.set('newPName', '');
-			this.set('newPType', '');
-			this.set('newPUrlOld', '');			
+			this.set('newPType', '');	
+			$('.tab-pane:not(:first)').remove();
+			$('.nav-tabs li:not(:first)').remove();	
 			$('.alert').alert('close');
 
-			// Save the new model
-			/* Save returns a promise. These are used to handle the exit or failure of the saving.
-			[:TODO] - Investigate about this.
-			    var self = this;
-
-			    function transitionToPost(post) {
-			        self.transitionToRoute('posts.show', post);
-			    }
-
-			    function failure(reason) {
-			      // handle the error
-			    }
-
-			     post.save().then(transitionToPost).catch(failure):
-			*/
 
 			page.save();
 			displayAlert('pages-index','This page is created without any elements associated.','warning');
@@ -165,8 +167,6 @@ App.PagesIndexController = Ember.ArrayController.extend({
 			var url = this.get('newPUrl');
 			var key = this.get('newPkey');
 			var value = this.get('newPvalue');
-
-			console.log('url: ' +url+ ' key: ' +key+ ' value: ' + value);
 
 			if (url === undefined || url == '') { 
 
@@ -187,8 +187,8 @@ App.PagesIndexController = Ember.ArrayController.extend({
 
 		  	var newDiv = '<div role="tabpanel" class="tab-pane" id="tab'+ $('.tab-pane').length +'">'+
 
-                '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput">'+ url + '</span>'+
-                '<label class="inputLabel" for="newAddres">Params:</label><span class="pageInput">'+ key + ' = '+ value +'</span>'+
+                '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput addressUrl">'+ url + '</span>'+
+                '<label class="inputLabel" for="newAddres">Params:</label><span class="pageInput addressParams">'+ key + '='+ value +'</span>'+
 		  	'</div>';
 
 		  	$('.nav-tabs').append('<li role="presentation"><a href="#tab'+ $('.tab-pane').length +'" aria-controls="tab'+ $('.tab-pane').length+'" role="tab" data-toggle="tab">'+$('.tab-pane').length+'</a></li>');
@@ -200,6 +200,7 @@ App.PagesIndexController = Ember.ArrayController.extend({
 		}
   	}
 });
+
 
 /**
 * Handles the view object
@@ -228,17 +229,6 @@ App.ElementsIndexView = Ember.View.extend({
 });
 
 App.ElementsIndexController = Ember.ArrayController.extend({
-	/*currentPages : [], NOT SUPPORTED, BUT LEFT HERE AS AN EXAMPLE OF HOW TO DO IT
-	init: function(){
-
-		this._super(); //Necessary if we override init.
-
-
-		for(var i = 0; i < App.Page.FIXTURES.length; i++){
-
-			this.currentPages.push({id:App.Page.FIXTURES[i].id,name:App.Page.FIXTURES[i].name});
-		}
-	},*/
 	actions: {
 		createElement: function() {
 
@@ -328,3 +318,28 @@ function IsURL(url) {
 	var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
 	return regexp.test(url);
 }
+
+
+/*setInterval(function(){
+
+	var array = [];
+	var page = {};
+ 	
+
+		//ENCAPSULATE ON A FUNCTION FOR THE PROBLEM OF THE VARIABLES
+	 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
+
+	 		(function(App, page, array){
+	 	 		page.id = App.Page.FIXTURES[j].id;
+		 		page.name = App.Page.FIXTURES[j].name;
+		 		page.pageType = App.Page.FIXTURES[j].pageType;
+		 		page.address = App.Page.FIXTURES[j].address;
+		 		page.elements = App.Page.FIXTURES[j].elements;
+
+		 		array.push(page);
+		 		page = {};
+			})(App, page, array);
+		}
+	console.log(array.length);
+	App.ConfigController.pages = array;
+}, 3000);*/

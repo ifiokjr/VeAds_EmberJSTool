@@ -5,7 +5,7 @@
 App.Page = DS.Model.extend({
    	name: DS.attr('string'),
 	pageType: DS.attr('string'),
-	address: DS.attr('string'),
+	addresses: DS.attr('array'),
 	elements: DS.attr('array')
 });
 
@@ -18,13 +18,13 @@ App.Page.FIXTURES = [
 		id:1,
 	    name: 'Product Page',
 	    pageType: 'product', 
-		address: 'http://dummy.com/example',
+		addresses: [{url:'http://dummy.com/example',params:'session=123'}],
 		elements: ['1','8']
 	},{
 		id:2,
 	    name: 'Basket Page',
 	    pageType: 'basket', 
-		address: 'http://dummy.com/example',
+		addresses: [{url:'http://merdo.com/example', params:'session=456'}],
 		elements: ['6']
 	}];
 

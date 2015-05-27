@@ -26,10 +26,31 @@ App.Router.map(function() {
 *
 * We add a route for the Page model to the page objects in the view
 */
+App.ApplicationRoute = Ember.Route.extend({
+  /*We can handle here the actions when we want, and propagate them to parents or to the controller*/
+  actions: {
+    createPage: function() {
+
+      console.log('application route');
+     }
+  }
+});
+
 App.PagesRoute = Ember.Route.extend({
   model: function() {
 
     return this.store.find('Page');
+  },
+
+  /*We can handle here the actions when we want, and propagate them to parents or to the controller*/
+  actions: {
+    createPage: function() {
+
+      console.log('routeEEEEE');
+
+      this.controllerFor('PagesIndex').send('insertPage');
+      return true;
+     }
   }
 });
 

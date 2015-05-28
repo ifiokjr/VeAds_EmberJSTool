@@ -13,8 +13,32 @@ html, body{
 * NAVBAR STYLES
 */
 .navbar-brand{
+
   font-size: 24px;
 }
+.navbar-nav{
+
+	font-size: 18px;
+}
+	.navbar-nav li{
+
+		font-size: 18px;
+	}
+	.navbar-nav li:after{
+
+		display: block;
+		position: absolute;
+		left: 0;
+		bottom: -5px;
+		width: 0;
+		height: 5px;
+		background-color: #000000;
+		content: "";
+		transition: width 0.2s;
+	}
+	.navbar-nav li:hover:after{
+		width: 100%;
+	}
 .table{
 	background-color: #E1E1E1;
 	padding-top: 10px;
@@ -53,7 +77,30 @@ html, body{
 
 		background-color: #D2D2D2;
 		border-left:3px solid black;
-	}		
+	}	
+		.table .deleteImage{
+
+			cursor:pointer;
+			visibility:hidden;
+			position: absolute;
+			right: 25px;
+		}	
+		.table>tbody>tr:hover .deleteImage{
+
+			visibility:initial;
+		}		
+			.table>tbody>tr:hover .deleteImage:hover{
+
+				animation: shake .5s ease-in-out;
+			}
+			@keyframes shake{
+				0% {transform: translateX(0);}
+				20% {transform: translateX(-3px);}
+				40% {transform: translateX(3px);}
+				60% {transform: translateX(-3px);}
+				80% {transform: translateX(3px);}
+				100% {transform: translateX(0);}
+			}
 	.table>tbody>tr:last-child:hover{
 
 		background-color: #E1E1E1;
@@ -72,7 +119,6 @@ html, body{
 		.table a:hover{
 			color:initial;
 		}
-
 
 /**
 * Page/Element display

@@ -40,55 +40,6 @@
     </div>
 
     <footer class="footer">
-     <!--/* <div class="container-fluid panel panel-primary">
-        <div class="row panel-heading">
-          <div class="col-xs-12">
-
-            <h4 class="panel-title">Global features:</h4>
-            flexID: <span>{{flexID}}</span>, <span>{{flexID}}</span> 
-          </div>   
-        </div>   
-        <div class="row panel-body">    
-          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
-              
-            <label class="inputLabel">Flex ID:</label> 
-            <span> {{input class="form-control" type="text" id="flexID" placeholder="6 Digit code" value=flexID}}</span> 
-          </div>
-          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
-
-            <label class="inputLabel">Genie J.Code:</label>
-            <span> {{input class="form-control" type="text" id='GenieJC' placeholder="aBceDelkj" value=GenieJC}}</span> 
-          </div>
-          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
-
-            <label class="inputLabel">Conversion ID:</label> 
-            <span>{{input class="form-control" type="text" id='ConversionID' placeholder="Conversion ID" value=ConversionID}}</span> 
-          </div>
-          <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 form-group">
-
-            <label class="inputLabel">Segment IDs:</label>
-            <div class="container-fluid">
-              <div class="row">
-                  <div class="col-xs-12">
-                    {{input class="form-control" type="text" id='SegProdPage' placeholder="Product P." value=SegProdPage}}
-                  </div>  
-              </div>  
-              <div class="row">
-                  <div class="col-xs-12">
-                    {{input class="form-control" type="text" id='SegCompPage' placeholder="Complete P." value=SegCompPage}}
-                  </div>
-              </div>  
-              <div class="row">                
-                  <div class="col-xs-12">
-                    {{input class="form-control" type="text" id='SegROSPage' placeholder="ROS Page" value=SegROSPage}}
-                  </div>
-              </div>
-            </div>        
-          </div>
-        </div>
-      </div>*/-->
-
-
       by <strong>{{controller.author}}</strong>.
     </footer>
 
@@ -111,9 +62,9 @@
       <p>This is just a test for the future tool super powerful that we are building.</p>
   <br>  <br>
       <b>TODOS:</b>
- 
-       <br><br>  
-       config object rendered correctly. Missing rendering the computed property after adding fixtures. If i cant bind it, button generate that sets the properties, otherwiser try timeout.  
+
+      <br><br>
+      Enable removing pages/elements and the id of the related element. On click on the trash, remove.
       <br><br>
       persistance for when "reloading" things not dissappearing.
       <br><br>
@@ -139,7 +90,10 @@
             <tbody>
              {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
-                  <span class='pageLine'>{{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}}<span class='muted'> pageId: <span>{{elem.id}}</span></span></span>
+                  <span class='pageLine'>
+                    {{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}}<span class='muted'> pageId: <span>{{elem.id}}</span></span>
+                    <span class="deleteImage"><img src="img/trash.png" alt="delete" height="18" width="18"></span>
+                  </span>
                 </td></tr>
               {{/each}}
                 <tr><td>
@@ -147,7 +101,7 @@
                     {{#link-to 'pages'}}<div class="btn btn-primary btn-sm">Create Page</div>{{/link-to}}
                  </span>
                 </td></tr>
-            </tbody>
+              </tbody>
           </table>
         </div>        
         <div class="col-xs-9">
@@ -286,6 +240,7 @@
              {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
                   <span class='pageLine'>{{#link-to 'element' elem}}<span>{{elem.name}}</span>{{/link-to}} <span class='muted'> pageId: <span>{{elem.id}}</span></span></span>
+                  <span class="deleteImage"><img src="img/trash.png" alt="delete" height="18" width="18"></span>
                 </td></tr>
               {{/each}}
                 <tr><td>
@@ -422,6 +377,11 @@
                 </div>
                 <div class="col-xs-12 form-group">
 
+                  <label class="inputLabel">Sum:</label>
+                  <span> {{input class="form-control" type="text" id='Sum' placeholder="sum" value=sum}}</span> 
+                </div>
+                <div class="col-xs-12 form-group">
+
                   <label class="inputLabel">Conversion ID:</label> 
                   <span>{{input class="form-control" type="text" id='ConversionID' placeholder="Conversion ID" value=ConversionID}}</span> 
                 </div>
@@ -459,26 +419,9 @@
                 <span class="configObject">segProdPage:<span>{{SegProdPage}}</span>,</span>
                 <span class="configObject">segCompPage:<span>{{SegCompPage}}</span>,</span>
                 <span class="configObject">segROSPage:<span>{{SegROSPage}}</span>,</span>
-                <span class="configObject">pages:[
-                  <span>{{#each elem in pages}}
-                    <span class="configObject">{id:<span>{{elem.id}}</span>,</span>
-                    <span class="configObject">name:<span>{{elem.name}}</span>,</span>
-                    <span class="configObject">pageType:<span>{{elem.pageType}}</span>,</span>
-                    <span class="configObject">address:<span>{{elem.address}}</span>,</span>
-                    <span class="configObject">elements:[<span>{{elem.elements}}</span>]}</span>
-                    <span class="configObject configObjectSeparator">,</span>
-                  {{/each}}
-                  </span>],
+                <span class="configObject pages">
                 </span>  
-                <span class="configObject">elements:[
-                  <span>{{#each elem in elements}}
-                    <span class="configObject">{id:<span>{{elem.id}}</span>,</span>
-                    <span class="configObject">name:<span>{{elem.name}}</span>,</span>
-                    <span class="configObject">pageType:<span>{{elem.selector}}</span>,</span>
-                    <span class="configObject">pages:[<span>{{elem.pages}}</span>]}</span>
-                    <span class="configObject configObjectSeparator">,</span>
-                  {{/each}}
-                  </span>]
+                <span class="configObject elements">
                 </span>               
               }</span>     
             </span>

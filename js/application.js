@@ -59,67 +59,62 @@ App.ConfigView = Ember.View.extend({
 	ConversionID : '',
 	SegProdPage : '',
 	SegCompPage : '',
-	SegROSPage : ''
+	SegROSPage : '',
+	pages: '',
+	elements: ''
 });
 
+/*
+* Config is just a view, we don't need a controller here.
+*/
 App.ConfigView = Ember.View.extend({
+
   didInsertElement : function(){//Function executed after the object is inserted on the template
 
-  	console.log('afterinsertelement');
     this._super();
+	console.log('config view');
+
+	/*** We need to set the pages/elements objects after inserting the view, as properties can be observed from fixtures, but not updated after controller.init() ***/
+	var pageArray = [];
+	var page = {};	
+	var elementArray = [];
+	var element = {};
+ 	
+ 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
+
+ 		page.id = App.Page.FIXTURES[j].id;
+ 		page.name = App.Page.FIXTURES[j].name;
+ 		page.pageType = App.Page.FIXTURES[j].pageType;
+ 		page.address = App.Page.FIXTURES[j].address;
+ 		page.elements = App.Page.FIXTURES[j].elements;
+
+ 		pageArray.push(page);
+ 		page = {};
+	}
+
+ 	for(var z = 0; z<App.Element.FIXTURES.length; z++){
+
+ 		element.id = App.Element.FIXTURES[z].id;
+ 		element.name = App.Element.FIXTURES[z].name;
+ 		element.selector = App.Element.FIXTURES[z].selector;
+ 		element.pages = App.Element.FIXTURES[z].pages;
+
+ 		elementArray.push(element);
+ 		element = {};
+	}
+
+	this.pages = formatPages(pageArray);
+	this.elements = formatElements(elementArray);
   }
-});
-
-App.ConfigController = Ember.ArrayController.extend({
-	pages: function(){
-
-		var array = [];
-		var page = {};
-	 	
-		/*ENCAPSULATE ON A FUNCTION FOR THE PROBLEM OF THE VARIABLES*/
-	 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
-
-	 		page.id = App.Page.FIXTURES[j].id;
-	 		page.name = App.Page.FIXTURES[j].name;
-	 		page.pageType = App.Page.FIXTURES[j].pageType;
-	 		page.address = App.Page.FIXTURES[j].address;
-	 		page.elements = App.Page.FIXTURES[j].elements;
-
-	 		array.push(page);
-	 		page = {};
-		}
-
-		return array;
-
-	}.property('pages'),
-	elements: function(){
-
-		var array = [];
-		var element = {};
-	 	for(var z = 0; z<App.Element.FIXTURES.length; z++){
-
-	 		element.id = App.Element.FIXTURES[z].id;
-	 		element.name = App.Element.FIXTURES[z].name;
-	 		element.selector = App.Element.FIXTURES[z].selector;
-	 		element.pages = App.Element.FIXTURES[z].pages;
-
-	 		array.push(element);
-	 		element = {};
-		}
-
-		return array;
-	}.property('elements')
-	
 });
 
 
 App.PagesIndexController = Ember.ArrayController.extend({
-
 	newPkey : '',
 	newPvalue : '',
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
 	actions: {
-		insertPage: function() {
+		createPage: function() {
 
 			var name = $('#newPName').val();
 			var type = $('#newTypeElements select option:selected').val();
@@ -140,10 +135,10 @@ App.PagesIndexController = Ember.ArrayController.extend({
 		  		return; 
 		  	}*/
 
-
 			var page = this.store.createRecord('Page', {
 
-				id: parseInt(App.Page.FIXTURES[App.Page.FIXTURES.length-1].id)+1,
+				id: nextID(App.Page.FIXTURES),
+				// id: parseInt(App.Page.FIXTURES[App.Page.FIXTURES.length-1].id)+1,
 				name: name,
 				pageType: type,
 				addresses: ad,
@@ -158,6 +153,7 @@ App.PagesIndexController = Ember.ArrayController.extend({
 			$('.nav-tabs li:not(:first)').remove();	
 			$('.alert').alert('close');
 
+			this.newInserted = true;
 
 			page.save();
 			displayAlert('pages-index','This page is created without any elements associated.','warning');
@@ -173,12 +169,12 @@ App.PagesIndexController = Ember.ArrayController.extend({
 		  		displayAlert('pages-index','Indicate a Url please...','danger');
 		  		return; 
 		  	}
-		  	else if(!IsURL(url)){
+		  	/*else if(!IsURL(url)){
 
 
 		  		displayAlert('pages-index','Url needs to be a valid url (protocol included)','danger');
 		  		return; 
-		  	}
+		  	}*/
 		  	else if((key !== "" && value === "") || (value !== "" && key === "")){
 
 		  		displayAlert('pages-index','A parameter needs a key and a value FIRST','danger');
@@ -257,8 +253,8 @@ App.ElementsIndexController = Ember.ArrayController.extend({
 		  // Create the new Element model
 		  	var element = this.store.createRecord('Element', {
 
-		    	id: parseInt(App.Element.FIXTURES[App.Element.FIXTURES.length-1].id)+1,
-
+		    	id: nextID(App.Element.FIXTURES),
+		    	// id: parseInt(App.Element.FIXTURES[App.Element.FIXTURES.length-1].id)+1,
 			    name: name,
 				selector: selector,
 				pages: pages
@@ -319,27 +315,55 @@ function IsURL(url) {
 	return regexp.test(url);
 }
 
+function formatPages(pagesArray){
 
-/*setInterval(function(){
+  var formattedArray = 'pages:[<span>';
 
-	var array = [];
-	var page = {};
- 	
+  for(var i = 0; i<pagesArray.length; i++){
 
-		//ENCAPSULATE ON A FUNCTION FOR THE PROBLEM OF THE VARIABLES
-	 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
+    formattedArray += '<span class="configObject">{id:<span>'+pagesArray[i].id+'</span>,</span>';
+    formattedArray += '<span class="configObject">name:<span>'+pagesArray[i].name+'</span>,</span>';
+    formattedArray += '<span class="configObject">pageType:<span>'+pagesArray[i].pageType+'</span>,</span>';
+    formattedArray += '<span class="configObject">address:<span>'+pagesArray[i].address+'</span>,</span>';
+    formattedArray += '<span class="configObject">elements:[<span>'+pagesArray[i].elements+'</span>]}</span>';
+    formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
+  }
 
-	 		(function(App, page, array){
-	 	 		page.id = App.Page.FIXTURES[j].id;
-		 		page.name = App.Page.FIXTURES[j].name;
-		 		page.pageType = App.Page.FIXTURES[j].pageType;
-		 		page.address = App.Page.FIXTURES[j].address;
-		 		page.elements = App.Page.FIXTURES[j].elements;
+  formattedArray += '</span>],';
 
-		 		array.push(page);
-		 		page = {};
-			})(App, page, array);
+  $('.configObject.pages').empty();
+  $('.configObject.pages').append(formattedArray);
+}
+
+function formatElements(elementsArray){
+
+  var formattedArray = 'elements:[<span>';
+
+  for(var i = 0; i<elementsArray.length; i++){
+
+    formattedArray += '<span class="configObject">{id:<span>'+elementsArray[i].id+'</span>,</span>';
+    formattedArray += '<span class="configObject">name:<span>'+elementsArray[i].name+'</span>,</span>';
+    formattedArray += '<span class="configObject">selector:<span>'+elementsArray[i].selector+'</span>,</span>';
+    formattedArray += '<span class="configObject">pages:[<span>'+elementsArray[i].pages+'</span>]}</span>';
+    formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
+  }
+
+  formattedArray += '</span>],';
+
+  $('.configObject.elements').empty();
+  $('.configObject.elements').append(formattedArray);
+}
+
+
+function nextID(fixtures){
+
+	var maxId = fixtures[0].id;
+
+	for(var i = 0; i < fixtures.length; i++){
+
+		if(fixtures[i].id > maxId){
+			maxId = fixtures[i].id;
 		}
-	console.log(array.length);
-	App.ConfigController.pages = array;
-}, 3000);*/
+	}
+	return maxId++;
+}

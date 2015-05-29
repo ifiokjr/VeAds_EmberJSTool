@@ -1,4 +1,7 @@
-App = Ember.Application.create();
+App = Ember.Application.create({
+
+	LOG_TRANSITIONS: true
+});
 
 /**
 *
@@ -36,10 +39,7 @@ App.register("transform:array", DS.ArrayTransform);
 
 
 /**
-*
-* CONTROLLERS.
-* IMPORTANT: The page controllers are related to the ROUTING names
-* Controller associated to the default template. "Static" way of binding values.
+* VIEWS & CONTROLLERS.
 */
 App.ApplicationController = Ember.Controller.extend({
 
@@ -52,69 +52,15 @@ App.IndexController = Ember.Controller.extend({
   companyName: "VeInteractive"
 });
 
-App.ConfigView = Ember.View.extend({
 
-	flexID: '',
- 	GenieJC : '',
-	ConversionID : '',
-	SegProdPage : '',
-	SegCompPage : '',
-	SegROSPage : '',
-	pages: '',
-	elements: ''
-});
-
-/*
-* Config is just a view, we don't need a controller here.
+/**
+* ELEMENTS INDEX. We need controller to execute create Page and address.
 */
-App.ConfigView = Ember.View.extend({
+App.PagesIndexController = Ember.Controller.extend({
 
-  didInsertElement : function(){//Function executed after the object is inserted on the template
-
-    this._super();
-	console.log('config view');
-
-	/*** We need to set the pages/elements objects after inserting the view, as properties can be observed from fixtures, but not updated after controller.init() ***/
-	var pageArray = [];
-	var page = {};	
-	var elementArray = [];
-	var element = {};
- 	
- 	for(var j = 0; j<App.Page.FIXTURES.length; j++){
-
- 		page.id = App.Page.FIXTURES[j].id;
- 		page.name = App.Page.FIXTURES[j].name;
- 		page.pageType = App.Page.FIXTURES[j].pageType;
- 		page.address = App.Page.FIXTURES[j].address;
- 		page.elements = App.Page.FIXTURES[j].elements;
-
- 		pageArray.push(page);
- 		page = {};
-	}
-
- 	for(var z = 0; z<App.Element.FIXTURES.length; z++){
-
- 		element.id = App.Element.FIXTURES[z].id;
- 		element.name = App.Element.FIXTURES[z].name;
- 		element.selector = App.Element.FIXTURES[z].selector;
- 		element.pages = App.Element.FIXTURES[z].pages;
-
- 		elementArray.push(element);
- 		element = {};
-	}
-
-	this.pages = formatPages(pageArray);
-	this.elements = formatElements(elementArray);
-  }
-});
-
-
-App.PagesIndexController = Ember.ArrayController.extend({
-	newPkey : '',
-	newPvalue : '',
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
-	actions: {
-		createPage: function() {
+	actions: {		
+			createPage: function() {
 
 			var name = $('#newPName').val();
 			var type = $('#newTypeElements select option:selected').val();
@@ -125,9 +71,6 @@ App.PagesIndexController = Ember.ArrayController.extend({
 
 				ad.push({url:$('#'+$(this).attr('id')+' .addressUrl').text(),params:$('#'+$(this).attr('id')+' .addressParams').text()});
 			});
-
-			console.log(name);
-			console.log(type);
 
 			/*if (name === undefined || type === undefined || ad.length == 0) { 
 
@@ -198,10 +141,51 @@ App.PagesIndexController = Ember.ArrayController.extend({
 });
 
 
+App.PageController = Ember.ObjectController.extend({
+
+	isEditing: false,
+	actions:{
+		edit: function(){
+
+			this.set('isEditing', true);
+		},
+		doneEditing: function(){
+
+			this.set('isEditing', false);
+		},
+		deletePage: function(page) {
+
+			if(confirm('Are you sure you want to delete this Page?')){
+
+				//Removing the pages from the related elements
+				for(var i = 0; i < App.Element.FIXTURES.length; i++){
+
+					if(App.Element.FIXTURES[i].pages.indexOf(page.id) >= 0){
+
+						App.Element.FIXTURES[i].pages.splice(App.Element.FIXTURES[i].pages.indexOf(page.id),1);
+
+						if(App.Element.FIXTURES[i].pages.length === 0){
+
+							App.Element.FIXTURES.splice(i,1);		
+						}					
+					}
+				}
+
+				page.deleteRecord();
+				page.save();
+				this.transitionToRoute('pages.index');
+			}
+	    }
+	}
+});
+
+
 /**
-* Handles the view object
+* ELEMENTS INDEX. We need view, to execute actions when view inserted.
+*  				  We need controller to execute create Element.
 */
 App.ElementsIndexView = Ember.View.extend({
+
   didInsertElement : function(){//Function executed after the object is inserted on the template
 
     this._super();
@@ -224,7 +208,8 @@ App.ElementsIndexView = Ember.View.extend({
   }
 });
 
-App.ElementsIndexController = Ember.ArrayController.extend({
+App.ElementsIndexController = Ember.Controller.extend({
+
 	actions: {
 		createElement: function() {
 
@@ -284,6 +269,111 @@ App.ElementsIndexController = Ember.ArrayController.extend({
 	}
 });
 
+App.ElementController = Ember.ObjectController.extend({
+
+	isEditing: false,
+	actions:{
+		edit: function(){
+
+			this.set('isEditing', true);
+		},
+		doneEditing: function(){
+
+			this.set('isEditing', false);
+
+			var newPages = this.get('pages');
+			var elemID = this.get('id');
+
+			var index;
+
+			for(var i = 0; i < App.Page.FIXTURES.length; i++){
+
+				index = newPages.indexOf(App.Page.FIXTURES[i].id);
+
+				if(index > -1){//We push this element to the pages don't have it and need it
+					if(App.Page.FIXTURES[i].elements.indexOf(elemID) == -1){
+
+						App.Page.FIXTURES[i].elements.push(elemID);
+					}
+				}else{//We remove it from the pages have it and don't need it
+					if(App.Page.FIXTURES[i].elements.indexOf(elemID) > -1){
+
+						App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(elemID),1);
+					}
+				}
+			}
+		},
+	    deleteElement: function(element) {
+
+		    if(confirm('Are you sure you want to delete this Element?')){
+
+		        //Removing the element iDs from the pages.
+		        for(var i = 0; i < App.Page.FIXTURES.length; i++){
+
+					if(App.Page.FIXTURES[i].elements.indexOf(element.id) >= 0){
+
+						App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(element.id),1);     
+					}
+		        }
+
+		        element.deleteRecord();
+		        element.save();
+		        this.transitionToRoute('elements.index');
+		    }
+		}
+	}
+});
+
+/*
+* CONFIG. Just displaying, we need view but no controller.
+*/
+App.ConfigView = Ember.View.extend({
+
+	flexID: '',
+	GenieJC : '',
+	ConversionID : '',
+	SegProdPage : '',
+	SegCompPage : '',
+	SegROSPage : '',
+	pages: '',
+	elements: '',
+	didInsertElement : function(){//Function executed after the object is inserted on the template
+
+		this._super();
+
+		/*** We need to set the pages/elements objects after inserting the view, as properties can be observed from fixtures, but not updated after controller.init() ***/
+		var pageArray = [];
+		var page = {};	
+		var elementArray = [];
+		var element = {};
+			
+			for(var j = 0; j<App.Page.FIXTURES.length; j++){
+
+				page.id = App.Page.FIXTURES[j].id;
+				page.name = App.Page.FIXTURES[j].name;
+				page.pageType = App.Page.FIXTURES[j].pageType;
+				page.address = App.Page.FIXTURES[j].address;
+				page.elements = App.Page.FIXTURES[j].elements;
+
+				pageArray.push(page);
+				page = {};
+		}
+
+			for(var z = 0; z<App.Element.FIXTURES.length; z++){
+
+				element.id = App.Element.FIXTURES[z].id;
+				element.name = App.Element.FIXTURES[z].name;
+				element.selector = App.Element.FIXTURES[z].selector;
+				element.pages = App.Element.FIXTURES[z].pages;
+
+				elementArray.push(element);
+				element = {};
+		}
+
+		this.pages = formatPages(pageArray);
+		this.elements = formatElements(elementArray);
+	}
+});
 
 /**
 * OTHER FUNCTIONS
@@ -360,10 +450,23 @@ function nextID(fixtures){
 	var maxId = fixtures[0].id;
 
 	for(var i = 0; i < fixtures.length; i++){
-
 		if(fixtures[i].id > maxId){
+
 			maxId = fixtures[i].id;
 		}
 	}
-	return maxId++;
+
+	maxId++;
+
+	return maxId;
 }
+
+/*window.onbeforeunload = function (e) {
+	e = e || window.event;
+
+if (e) {
+    e.returnValue = "Sure? If you reload you'll lose your data";
+}
+
+return "Sure? If you reload you'll lose your data";
+};*/

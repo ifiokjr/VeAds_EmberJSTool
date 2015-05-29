@@ -23,10 +23,10 @@ App.Element.FIXTURES = [
 		id:2,
 	    name: 'Unit Price',
 		selector: '.product .price',
-		pages: ['0','1']
+		pages: ['1','2']
 	},{
 		id:3,
 	    name: 'Produc image',
 		selector: '.product .image',
-		pages: ['0','1']
+		pages: ['0','5']
 	}];

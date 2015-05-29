@@ -2,11 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Ember Starter Kit</title>
+  <title>VeAds_Tool</title>
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
 
@@ -53,10 +55,10 @@
     Welcome!! This is a <strong>{{controller.appName}}</strong> Tool for <strong>{{controller.companyName}}</strong> and this is the footer section.
   </script>
 
+
 <!-- ***** -->
 <!-- ABOUT -->
 <!-- ***** -->
-   <!-- Ember will match the route about with the about id. -->
   <script type="text/x-handlebars" id="about">
     <div>
       <p>This is just a test for the future tool super powerful that we are building.</p>
@@ -64,16 +66,13 @@
       <b>TODOS:</b>
 
       <br><br>
-      Enable removing pages/elements and the id of the related element. On click on the trash, remove.
-      <br><br>
       persistance for when "reloading" things not dissappearing.
-      <br><br>
-      possibility of editing and removing elements / pages
       <br><br>
       calculation of ID of pages and elements properly. currently is .length+1, but if we allow removal / editing, id will be duplicated. 
       <br><br>
     </div>
   </script>
+
 
 <!-- ***** -->
 <!-- PAGES -->
@@ -82,7 +81,7 @@
         <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-3">
+        <div class="col-xs-12 col-sm-4">
           <table class="table">
             <thead>
               <tr><th><h4>Recent Pages</h4></th></tr>
@@ -92,7 +91,11 @@
                 <tr><td>
                   <span class='pageLine'>
                     {{#link-to 'page' elem}}<span>{{elem.name}}</span>{{/link-to}}<span class='muted'> pageId: <span>{{elem.id}}</span></span>
-                    <span class="deleteImage"><img src="img/trash.png" alt="delete" height="18" width="18"></span>
+                    <span class="delete-button">
+                      <button {{action "deletePage" elem}} >
+                        <img src="img/trash.png" alt="delete" height="18" width="18">
+                      </button>
+                    </span>
                   </span>
                 </td></tr>
               {{/each}}
@@ -104,7 +107,7 @@
               </tbody>
           </table>
         </div>        
-        <div class="col-xs-9">
+        <div class="col-xs-12 col-sm-8">
          {{outlet}}
         </div>
       </div>
@@ -197,14 +200,33 @@
     </div>
   </script>
 
+
+<!-- ******** -->
+<!-- * PAGE * -->
+<!-- ******** -->
   <script type="text/x-handlebars" id="page">
 
     <div class="modelTitle">
 
       <h1>{{name}}</h1>
       <h2>with ID: <span>{{id}}</span></h2>
+      <span class="delete-button">
+        <button {{action "deletePage" this}} >
+          <img src="img/trash.png" alt="delete" height="18" width="18">
+        </button>
+      </span>
     </div>
-
+    <div class="edit-button">
+      {{#if isEditing}}
+        Editing...
+        <button class="btn btn-primary btn-sm" {{action "doneEditing"}} >Done</button>
+        <div>
+          {{partial 'pageedit'}}
+        </div>
+      {{else}}
+        <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
+      {{/if}}
+    </div>
     <div class="intro">
       {{pageType}}
     </div> 
@@ -220,7 +242,19 @@
     <div class="intro">
       Elements applied: [<span>{{elements}}</span>]
     </div> 
+  </script>
 
+  <script type="text/x-handlebars" id="_pageedit">
+      Name:
+      <span>
+        {{textarea valueBinding='name'}}
+      </span> 
+      Addresses:     
+      <span>
+        {{#each elem in addresses}} <!--/*These are the pages defined on the route*/-->
+            <span>{{textarea valueBinding='elem.url'}}</span><span>{{textarea valueBinding='elem.params'}}</span>
+        {{/each}}
+      </span> 
   </script>
 
 
@@ -231,7 +265,7 @@
         <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xs-12 col-sm-4 col-md-3">
+        <div class="col-xs-12 col-sm-4">
           <table class="table">
             <thead>
               <tr><th><h4>Recent Elements</h4></th></tr>
@@ -240,7 +274,11 @@
              {{#each elem in model}} <!--/*These are the pages defined on the route*/-->
                 <tr><td>
                   <span class='pageLine'>{{#link-to 'element' elem}}<span>{{elem.name}}</span>{{/link-to}} <span class='muted'> pageId: <span>{{elem.id}}</span></span></span>
-                  <span class="deleteImage"><img src="img/trash.png" alt="delete" height="18" width="18"></span>
+                  <span class="delete-button">
+                    <button {{action "deleteElement" elem}} >
+                      <img src="img/trash.png" alt="delete" height="18" width="18">
+                     </button>
+                  </span>
                 </td></tr>
               {{/each}}
                 <tr><td>
@@ -251,7 +289,7 @@
             </tbody>
           </table>
         </div>        
-        <div class="col-xs-12 col-sm-8 col-md-9">
+        <div class="col-xs-12 col-sm-8">
          {{outlet}}
         </div>
       </div>
@@ -327,22 +365,56 @@
     </div>
   </script>
 
+
+<!-- ******** -->
+<!--  ELEMENT -->
+<!-- ******** -->
   <script type="text/x-handlebars" id="element">
 
     <div class="modelTitle">
 
       <h1>{{name}}</h1>
       <h2>with ID: <span>{{id}}</span></h2>
+      <span class="delete-button">
+        <button {{action "deleteElement" this}} >
+          <img src="img/trash.png" alt="delete" height="18" width="18">
+        </button>
+      </span>
     </div>
-
+    <div class="edit-button">
+      {{#if isEditing}}
+        Editing...
+        <button class="btn btn-primary btn-sm" {{action "doneEditing"}} >Done</button>
+        <div>
+          {{partial 'elementedit'}}
+        </div>
+      {{else}}
+        <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
+      {{/if}}
+    </div>
     <div class="intro">
       {{selector}}
     </div> 
     <div class="intro">
       Pages to apply: <span>{{pages}}</span>
     </div> 
-
   </script>
+
+  <script type="text/x-handlebars" id="_elementedit">
+      Name:
+      <span>
+        {{textarea valueBinding='name'}}
+      </span>
+      Selector:
+      <span>
+        {{textarea valueBinding='selector'}}
+      </span>
+      Pages:
+      <span>
+        {{textarea valueBinding='pages'}}
+      </span>
+  </script>
+
 
 <!-- ****** -->
 <!-- CONFIG -->

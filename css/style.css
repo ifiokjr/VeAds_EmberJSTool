@@ -78,18 +78,22 @@ html, body{
 		background-color: #D2D2D2;
 		border-left:3px solid black;
 	}	
-		.table .deleteImage{
+		.table .delete-button{
 
-			cursor:pointer;
 			visibility:hidden;
 			position: absolute;
 			right: 25px;
 		}	
-		.table>tbody>tr:hover .deleteImage{
+		.table>tbody>tr:hover .delete-button{
 
 			visibility:initial;
-		}		
-			.table>tbody>tr:hover .deleteImage:hover{
+		}				
+			.table>tbody>tr:hover button{
+
+				background-color: transparent;
+  				border: 0px;
+			}	
+			.table>tbody>tr:hover .delete-button:hover{
 
 				animation: shake .5s ease-in-out;
 			}
@@ -160,7 +164,31 @@ select option.ember-view{
 	border-left: 3px solid black;
 	padding: 10px;
 }
+.edit-button{
+	position: absolute;
+  	right: 15px;
+  	font-weight: normal;
+  	font-style: italic;  
+  	text-align: right
+}
+	.edit-button button{
+	  	font-style: normal;
+	  	font-weight: bold;
+	}
+	.edit-button textarea{
+		display: block;
+	  	margin: 10px 0px;
+	  	width: 300px;
+	 	font-family: Courier;
+	 	font-style: italic;	  	
+	 	font-weight: normal;
+	}
+	.edit-button div{
 
+  		text-align: left;	
+  		font-style: normal;		  	
+  		font-weight: bold;
+	}
 /**
 * Tab panel
 */

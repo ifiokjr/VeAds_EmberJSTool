@@ -21,6 +21,12 @@ App.Page.FIXTURES = [
 		addresses: [{url:'http://dummy.com/example',params:'session=123'}],
 		elements: ['1','8']
 	},{
+		id:5,
+	    name: 'Product Page',
+	    pageType: 'product', 
+		addresses: [{url:'http://dummy.com/example',params:'session=123'}],
+		elements: ['0','8']
+	},{
 		id:2,
 	    name: 'Basket Page',
 	    pageType: 'basket', 

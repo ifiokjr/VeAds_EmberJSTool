@@ -54,7 +54,7 @@ App.IndexController = Ember.Controller.extend({
 
 
 /**
-* ELEMENTS INDEX. We need controller to execute create Page and address.
+* Pages INDEX. We need controller to execute create Page and address.
 */
 App.PagesIndexController = Ember.Controller.extend({
 
@@ -152,6 +152,23 @@ App.PageController = Ember.ObjectController.extend({
 		doneEditing: function(){
 
 			this.set('isEditing', false);
+
+			var pageID = this.get('id');
+			var name = this.get('name');
+			var addresses = this.get('addresses');
+
+
+			console.log(addresses);
+
+			//Editing and saving the element.
+			for(var j = 0; j < App.Page.FIXTURES.length; j++){
+
+				if(App.Page.FIXTURES[j].id === pageID){
+
+					App.Page.FIXTURES[j].name = name;
+					App.Page.FIXTURES[j].addresses = addresses;
+				}
+			}
 		},
 		deletePage: function(page) {
 
@@ -190,21 +207,21 @@ App.ElementsIndexView = Ember.View.extend({
 
     this._super();
 
-    	var pList = "";
+	var pList = "";
 
-		for(var i = 0; i < App.Page.FIXTURES.length; i++){
+	for(var i = 0; i < App.Page.FIXTURES.length; i++){
 
-			$('.multiSelect ul').append("<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /> Name: <span>"+App.Page.FIXTURES[i].name+"</span> ID:<span>"+App.Page.FIXTURES[i].id+"</span></li>");
-		}
+		$('.multiSelect ul').append("<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /> Name: <span>"+App.Page.FIXTURES[i].name+"</span> ID:<span>"+App.Page.FIXTURES[i].id+"</span></li>");
+	}
 
-		$('.multiSel').click(function(){
-			$(".dropdown dd ul").slideToggle('fast');
-		});
+	$('.multiSel').click(function(){
+		$(".dropdown dd ul").slideToggle('fast');
+	});
 
-		$('input[type=checkbox]').click(function(){
+	$('input[type=checkbox]').click(function(){
 
-			$('.checkedSelected').text($('input[type=checkbox]:checked').length);
-		})
+		$('.checkedSelected').text($('input[type=checkbox]:checked').length);
+	})
   }
 });
 
@@ -277,15 +294,35 @@ App.ElementController = Ember.ObjectController.extend({
 
 			this.set('isEditing', true);
 		},
+		/*If element doesn't apply to any page after editing, it will be removed.*/
 		doneEditing: function(){
 
 			this.set('isEditing', false);
 
 			var newPages = this.get('pages');
 			var elemID = this.get('id');
+			var selector = this.get('selector');
+			var name = this.get('name');
 
 			var index;
 
+			//Editing and saving the element.
+			for(var j = 0; j < App.Element.FIXTURES.length; j++){
+
+				if(App.Element.FIXTURES[j].id === elemID){
+
+					if(newPages.length < 1){
+DELETE ELEMENT REPORTING THE ELEMENT TO THE CONTROLLER OR TO THE ROUTE!!!! VEURE COM RETORNAR A LA ROUTE
+					}else{
+
+						App.Element.FIXTURES[j].name = name;
+						App.Element.FIXTURES[j].selector = selector;
+						App.Element.FIXTURES[j].pages = newPages;
+					}
+				}
+			}
+
+			//Editing the pages related to the element
 			for(var i = 0; i < App.Page.FIXTURES.length; i++){
 
 				index = newPages.indexOf(App.Page.FIXTURES[i].id);
@@ -302,6 +339,17 @@ App.ElementController = Ember.ObjectController.extend({
 					}
 				}
 			}
+
+			/*if(newPages.length < 1){
+
+				if(confirm('Not applying the element to any pages. Element will be removed...')){
+
+										
+				}else{
+
+
+				}
+			}*/
 		},
 	    deleteElement: function(element) {
 
@@ -352,7 +400,7 @@ App.ConfigView = Ember.View.extend({
 				page.id = App.Page.FIXTURES[j].id;
 				page.name = App.Page.FIXTURES[j].name;
 				page.pageType = App.Page.FIXTURES[j].pageType;
-				page.address = App.Page.FIXTURES[j].address;
+				page.addresses = App.Page.FIXTURES[j].addresses;
 				page.elements = App.Page.FIXTURES[j].elements;
 
 				pageArray.push(page);
@@ -414,7 +462,7 @@ function formatPages(pagesArray){
     formattedArray += '<span class="configObject">{id:<span>'+pagesArray[i].id+'</span>,</span>';
     formattedArray += '<span class="configObject">name:<span>'+pagesArray[i].name+'</span>,</span>';
     formattedArray += '<span class="configObject">pageType:<span>'+pagesArray[i].pageType+'</span>,</span>';
-    formattedArray += '<span class="configObject">address:<span>'+pagesArray[i].address+'</span>,</span>';
+    formattedArray += '<span class="configObject">'+formatAddresses(pagesArray[i].addresses)+'</span>';
     formattedArray += '<span class="configObject">elements:[<span>'+pagesArray[i].elements+'</span>]}</span>';
     formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
   }
@@ -424,6 +472,23 @@ function formatPages(pagesArray){
   $('.configObject.pages').empty();
   $('.configObject.pages').append(formattedArray);
 }
+
+function formatAddresses(addressesArray){
+
+	var formattedArray = 'addresses:[<span>';
+
+	for(var i = 0; i<addressesArray.length; i++){
+
+		formattedArray += '<span class="configObject">{url:<span>'+addressesArray[i].url+'</span>,</span>';
+		formattedArray += '<span class="configObject">name:<span>'+addressesArray[i].params+'</span>}</span>';
+		formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
+	}
+
+	formattedArray += '</span>],';
+
+	return formattedArray;
+}
+
 
 function formatElements(elementsArray){
 
@@ -460,13 +525,3 @@ function nextID(fixtures){
 
 	return maxId;
 }
-
-/*window.onbeforeunload = function (e) {
-	e = e || window.event;
-
-if (e) {
-    e.returnValue = "Sure? If you reload you'll lose your data";
-}
-
-return "Sure? If you reload you'll lose your data";
-};*/

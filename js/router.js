@@ -15,10 +15,6 @@ THIS.ROUTE -> Handle the actions both Route/Controller
 
       this.route('index');
       this.resource('page', {path: ':page_id'});
-      /*this.resource('page', {path: ':page_id'},  function(){
-
-        this.route('page');
-      });*/
     });
     this.resource('elements', function(){
 

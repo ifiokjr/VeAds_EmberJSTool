@@ -220,6 +220,18 @@ select option.ember-view{
 
 	margin-bottom: 0px;
 }
+.tab-pane .delete-button{
+
+	position:absolute;
+	right: 25px;
+  	top: 75px;
+  	cursor:pointer;
+
+}
+	.tab-pane .delete-button:hover{
+
+	  	animation: shake .5s ease-in-out;
+	}
 
 
 /**

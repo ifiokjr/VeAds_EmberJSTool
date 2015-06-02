@@ -66,6 +66,22 @@
       <b>TODOS:</b>
 
       <br><br>
+      Creation page -> create dynamic identifiers.
+      <br><br>
+      finish with removing of addresses
+      <pre>$('.tab-pane .delete-button').click(function(){
+
+      var id = $(this).parent().attr('id');
+
+      $(this).parent().remove();
+      $('[aria-controls="'+id+'"]').parent().remove();
+      })</pre>
+      remove address from the tabs.
+      <br><br>
+      change element selector to be object.
+      <br><br>
+      Review 1 by 1 all the elements are implemented. View, Model and Config.
+      <br><br>
       see bootswatch
       <br><br>
       localforage to persist the fixtures.
@@ -309,19 +325,49 @@
       </div> 
       <div class="row panel-body">
         <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newPage">Name:</label>
+          <label class="inputLabel" for="newEName">Name:</label>
           <span class="pageInput">
             {{input type="text" class="form-control" id="newEName" placeholder="New name" value=newEName insert-newline="createElement"}}
            </span>
         </div>        
       </div>
-
-      <!--/*[:TODO] - EMBER DOESN'T SUPPORT DROPDOWN SELECT, IT HAS TO BE CUSTOM, LATER ON ALSO THE SUPPORT FOR INPUT-URL*/-->
       <div class="row panel-body">
         <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newPage">Element selector:</label>
+          <label class="inputLabel" for="newESelector">Element selector:</label>
           <span class="pageInput">
             {{input type="text" id="newESelector" class="form-control" placeholder="#exampleId" value=newESelector insert-newline="createElement"}}
+          </span>
+        </div>        
+      </div>  
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group tab-pane">
+
+          <label class="inputLabel">Regex:</label>
+
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-xs-6 form-group">
+                <label class="inputLabel" for="newEregexinclude">Include</label>
+                <span class="pageInput">
+                  {{input type="text" id="newEregexinclude" class="form-control" placeholder="e;kj;k" value=newEregexInclude insert-newline="createElement"}}
+                </span>   
+              </div>  
+
+              <div class="col-xs-6 form-group">
+                <label class="inputLabel" for="newEregexexclude">Exclude</label>
+                <span class="pageInput">
+                  {{input type="text" id="newEregexexclude" class="form-control" placeholder=";kj;k" value=newEregexExclude insert-newline="createElement"}}
+                </span>   
+              </div>  
+            </div> 
+          </div>    
+        </div>    
+      </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newEfallback">Fallback:</label>
+          <span class="pageInput">
+            {{input type="text" id="newEfallback" class="form-control" placeholder="10" value=newEfallback insert-newline="createElement"}}
           </span>
         </div>        
       </div>      
@@ -388,17 +434,23 @@
     <div class="edit-button">
       {{#if isEditing}}
         Editing...
-        <button class="btn btn-primary btn-sm" {{action "doneEditing"}} >Done</button>
+        <button class="btn btn-primary btn-sm" {{action "doneEditing" this}} >Done</button>
         <div>
           {{partial 'elementedit'}}
         </div>
       {{else}}
-        <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
+        <button class="btn btn-primary btn-sm" {{action "edit" this}} >Edit</button>
       {{/if}}
     </div>
     <div class="intro">
-      {{selector}}
-    </div> 
+      Selector: <span>{{selector}}</span>
+    </div>  
+    <div class="intro">
+      Fallback: <span>{{fallback}}</span>
+    </div>     
+    <div class="intro">
+      Regex: Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
+    </div>                 
     <div class="intro">
       Pages to apply: <span>{{pages}}</span>
     </div> 
@@ -412,6 +464,18 @@
       Selector:
       <span>
         {{textarea valueBinding='selector'}}
+      </span>      
+      Fallback:
+      <span>
+        {{textarea valueBinding='fallback'}}
+      </span>
+      Regex include:
+      <span>
+        {{textarea valueBinding='regexInclude'}}
+      </span>
+      Regex exclude:
+      <span>
+        {{textarea valueBinding='regexExclude'}}
       </span>
       Pages:
       <span>
@@ -441,12 +505,22 @@
                 </div>   
               </div>   
               <div class="row panel-body">    
-                <div class="col-xs-12 form-group">
+               <!--/* <div class="col-xs-12 form-group">
                     
                   <label class="inputLabel">Flex ID:</label> 
                   <span> {{input class="form-control" type="text" id="flexID" placeholder="6 Digit code" value=flexID}}</span> 
+                </div>     */  -->                         
+                <div class="col-xs-12 form-group">
+                    
+                  <label class="inputLabel">Version:</label> 
+                  <span> {{input class="form-control" type="text" id="version" value=version}}</span> 
                 </div>
                 <div class="col-xs-12 form-group">
+                    
+                  <label class="inputLabel">avoidDOM:</label> 
+                  <span> {{input class="form-control" type="text" id="avoidDOM" value=avoidDOM}}</span> 
+                </div> 
+               <!--/* <div class="col-xs-12 form-group">
 
                   <label class="inputLabel">Genie J.Code:</label>
                   <span> {{input class="form-control" type="text" id='GenieJC' placeholder="aBceDelkj" value=GenieJC}}</span> 
@@ -475,8 +549,8 @@
                         {{input class="form-control" type="text" id='SegROSPage' placeholder="ROS Page" value=SegROSPage}}
                       </div>
                     </div>
-                  </div>        
-                </div>
+                  </div>    
+                </div> */-->   
               </div>
             </div>
           </div>        
@@ -484,15 +558,18 @@
             <span class="configBox">
 
               <span class="configObject">config: {
-                <span class="configObject">flexID:<span>{{flexID}}</span>,</span>
-                <span class="configObject">GenieJC:<span>{{GenieJC}}</span>,</span>
+                <!--/*<span class="configObject">flexID:<span>{{flexID}}</span>,</span>*/--> 
+               <!--/* <span class="configObject">GenieJC:<span>{{GenieJC}}</span>,</span>
                 <span class="configObject">ConversionID:<span>{{ConversionID}}</span>,</span>
-                <span class="configObject">SegmentIds: [<span>{{SegProdPage}}</span>,<span>{{SegCompPage}}</span>,<span>{{SegROSPage}}</span>],</span>
-                <span class="configObject pages">
-                </span>  
-                <span class="configObject elements">
-                </span>               
-              }</span>     
+                <span class="configObject">SegmentIds: [<span>{{SegProdPage}}</span>,<span>{{SegCompPage}}</span>,<span>{{SegROSPage}}</span>],</span>*/--> 
+                <span class="configObject">timeStamp:"<span>{{timeStamp}}</span>",</span>
+                <span class="configObject">version:"<span>{{version}}</span>",</span>
+                <span class="configObject">avoidDOM:<span>{{avoidDOM}}</span></span>},
+              </span>
+              <span class="configObject pages">
+              </span>  
+              <span class="configObject elements">
+              </span>                  
             </span>
           </div> 
         </div> 

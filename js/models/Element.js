@@ -5,6 +5,7 @@
 App.Element = DS.Model.extend({
    	name: DS.attr('string'),
 	selector: DS.attr('string'),
+	fallback: DS.attr('string'),
 	pages: DS.attr('array')
 });
 
@@ -18,15 +19,24 @@ App.Element.FIXTURES = [
 		id:1,
 	    name: 'Product ID',
 		selector: '#productName',
-		pages: ['0','1']
+		fallback: '50',
+		pages: ['0','1'],
+		regexInclude: ';kj;k',
+		regexExclude: ''  
 	},{
 		id:2,
 	    name: 'Unit Price',
-		selector: '.product .price',
-		pages: ['1','2']
+		selector: '#productName',
+		fallback: '100',
+		pages: ['1','2'],
+		regexInclude: ';kj;k',
+		regexExclude: ''  
 	},{
 		id:3,
 	    name: 'Produc image',
-		selector: '.product .image',
-		pages: ['0','5']
+		selector: '#productName',
+		fallback: '10',
+		pages: ['0','5'],
+		regexInclude: ';kj;k',
+		regexExclude: ''  
 	}];

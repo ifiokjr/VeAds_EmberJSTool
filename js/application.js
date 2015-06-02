@@ -65,14 +65,20 @@ App.PagesIndexController = Ember.Controller.extend({
 			var name = $('#newPName').val();
 			var type = $('#newTypeElements select option:selected').val();
 
-			var ad = [];
+			var urls = [];
 
 			$('.tab-pane:not(:first)').each(function(){
 
-				ad.push({url:$('#'+$(this).attr('id')+' .addressUrl').text(),params:$('#'+$(this).attr('id')+' .addressParams').text()});
+				if($('#'+$(this).attr('id')+' .addressParams').length > 0){
+
+					urls.push({url:$('#'+$(this).attr('id')+' .addressUrl').text()});
+				}else{
+
+					urls.push({url:$('#'+$(this).attr('id')+' .addressUrl').text(),params:$('#'+$(this).attr('id')+' .addressParams').text()});
+				}
 			});
 
-			/*if (name === undefined || type === undefined || ad.length == 0) { 
+			/*if (name === undefined || type === undefined || urls.length == 0) { 
 
 		  		displayAlert('pages-index','Fill up all the fields please...','danger');
 		  		return; 
@@ -84,7 +90,7 @@ App.PagesIndexController = Ember.Controller.extend({
 				// id: parseInt(App.Page.FIXTURES[App.Page.FIXTURES.length-1].id)+1,
 				name: name,
 				pageType: type,
-				addresses: ad,
+				addresses: urls,
 				elements: ['Elements not selected']
 			});
 
@@ -120,15 +126,21 @@ App.PagesIndexController = Ember.Controller.extend({
 		  	}*/
 		  	else if((key !== "" && value === "") || (value !== "" && key === "")){
 
-		  		displayAlert('pages-index','A parameter needs a key and a value FIRST','danger');
+		  		displayAlert('pages-index','A parameter needs a key and a value','danger');
 		  		return; 
 		  	}
 
 		  	var newDiv = '<div role="tabpanel" class="tab-pane" id="tab'+ $('.tab-pane').length +'">'+
 
-                '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput addressUrl">'+ url + '</span>'+
-                '<label class="inputLabel" for="newAddres">Params:</label><span class="pageInput addressParams">'+ key + '='+ value +'</span>'+
-		  	'</div>';
+                '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput addressUrl" contenteditable="true">'+ url + '</span>' +
+                '<span class="delete-button"><img src="img/trash.png" alt="delete" height="18" width="18"></span>';
+
+			if((key !== undefined && key !== '') || (value !== undefined && value !== '')){
+
+				newDiv += '<label class="inputLabel" for="newAddres">Params:</label><span class="pageInput addressParams"><span contenteditable="true">'+ key + '</span>=<span contenteditable="true">'+ value +'</span></span>';
+			}		             
+
+            newDiv += '</div>';
 
 		  	$('.nav-tabs').append('<li role="presentation"><a href="#tab'+ $('.tab-pane').length +'" aria-controls="tab'+ $('.tab-pane').length+'" role="tab" data-toggle="tab">'+$('.tab-pane').length+'</a></li>');
 		  	$('.tab-content').append(newDiv);
@@ -140,7 +152,6 @@ App.PagesIndexController = Ember.Controller.extend({
   	}
 });
 
-
 App.PageController = Ember.ObjectController.extend({
 
 	isEditing: false,
@@ -151,24 +162,11 @@ App.PageController = Ember.ObjectController.extend({
 		},
 		doneEditing: function(){
 
+			console.log('PageController: editing the page with id ' + this.get('id'));
+			this.set('name', this.get('name'));
+			this.set('addresses', this.get('addresses'));
+
 			this.set('isEditing', false);
-
-			var pageID = this.get('id');
-			var name = this.get('name');
-			var addresses = this.get('addresses');
-
-
-			console.log(addresses);
-
-			//Editing and saving the element.
-			for(var j = 0; j < App.Page.FIXTURES.length; j++){
-
-				if(App.Page.FIXTURES[j].id === pageID){
-
-					App.Page.FIXTURES[j].name = name;
-					App.Page.FIXTURES[j].addresses = addresses;
-				}
-			}
 		},
 		deletePage: function(page) {
 
@@ -233,6 +231,9 @@ App.ElementsIndexController = Ember.Controller.extend({
 		  // Get the page name by the newPage field
 			var name = this.get('newEName');
 			var selector = this.get('newESelector');
+			var fallback = this.get('newEfallback');
+			var regexInclude = this.get('newEregexInclude');
+			var regexExclude = this.get('newEregexExclude');
 
 		  	if (name === undefined || selector === undefined) { 
 
@@ -256,9 +257,11 @@ App.ElementsIndexController = Ember.Controller.extend({
 		  	var element = this.store.createRecord('Element', {
 
 		    	id: nextID(App.Element.FIXTURES),
-		    	// id: parseInt(App.Element.FIXTURES[App.Element.FIXTURES.length-1].id)+1,
 			    name: name,
 				selector: selector,
+				fallback: fallback,
+				regexInclude: regexInclude,
+			    regexExclude: regexExclude,
 				pages: pages
 		  	});
 
@@ -276,6 +279,9 @@ App.ElementsIndexController = Ember.Controller.extend({
 		  	/*Clearing the fields.*/
 			this.set('newEName', '');
 			this.set('newESelector', '');
+			this.set('newEregexExclude', '');
+			this.set('newEregexInclude', '');
+			this.set('newEfallback', '');
 			$('input[type=checkbox]:checked').attr('checked', false);
 			$('.checkedSelected').text(0);
 			$('.dropdown dd ul').hide('fast');
@@ -287,69 +293,70 @@ App.ElementsIndexController = Ember.Controller.extend({
 });
 
 App.ElementController = Ember.ObjectController.extend({
-
 	isEditing: false,
 	actions:{
-		edit: function(){
+		edit: function(element){
 
 			this.set('isEditing', true);
+			this.set('tempPages', this.get('pages'));
 		},
 		/*If element doesn't apply to any page after editing, it will be removed.*/
-		doneEditing: function(){
-
-			this.set('isEditing', false);
+		doneEditing: function(element){
 
 			var newPages = this.get('pages');
 			var elemID = this.get('id');
-			var selector = this.get('selector');
-			var name = this.get('name');
 
 			var index;
 
 			//Editing and saving the element.
-			for(var j = 0; j < App.Element.FIXTURES.length; j++){
+			console.log('ElementController: saving the element with id ' + elemID);
 
-				if(App.Element.FIXTURES[j].id === elemID){
-
-					if(newPages.length < 1){
-DELETE ELEMENT REPORTING THE ELEMENT TO THE CONTROLLER OR TO THE ROUTE!!!! VEURE COM RETORNAR A LA ROUTE
-					}else{
-
-						App.Element.FIXTURES[j].name = name;
-						App.Element.FIXTURES[j].selector = selector;
-						App.Element.FIXTURES[j].pages = newPages;
-					}
-				}
-			}
-
-			//Editing the pages related to the element
-			for(var i = 0; i < App.Page.FIXTURES.length; i++){
-
-				index = newPages.indexOf(App.Page.FIXTURES[i].id);
-
-				if(index > -1){//We push this element to the pages don't have it and need it
-					if(App.Page.FIXTURES[i].elements.indexOf(elemID) == -1){
-
-						App.Page.FIXTURES[i].elements.push(elemID);
-					}
-				}else{//We remove it from the pages have it and don't need it
-					if(App.Page.FIXTURES[i].elements.indexOf(elemID) > -1){
-
-						App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(elemID),1);
-					}
-				}
-			}
-
-			/*if(newPages.length < 1){
+			if(newPages.length < 1){
 
 				if(confirm('Not applying the element to any pages. Element will be removed...')){
 
-										
+					if(!this.send('deleteElement', element)){
+
+						console.log('ElementController: setting back the pages to the original');
+						this.set('pages', this.get('tempPages'));
+					}
 				}else{
 
-
+					console.log('ElementController: setting back the pages to the original');
+					this.set('pages', this.get('tempPages'));
 				}
-			}*/
+			}else{
+
+				this.set('name', this.get('name'));
+				this.set('selector', this.get('selector'));
+				this.set('pages', newPages);
+				this.set('fallback', this.get('fallback'));
+				this.set('regexInclude', this.get('regexInclude'));
+				this.set('regexExclude', this.get('regexExclude'));
+
+				//Editing the pages related to the element
+				for(var i = 0; i < App.Page.FIXTURES.length; i++){
+
+					index = newPages.indexOf(App.Page.FIXTURES[i].id);
+
+					if(index > -1){//We push this element to the pages don't have it and need it
+						if(App.Page.FIXTURES[i].elements.indexOf(elemID) == -1){
+
+							console.log('ElementController: pushing element id to page ' + App.Page.FIXTURES[i].id);
+							App.Page.FIXTURES[i].elements.push(elemID);
+						}
+					}else{//We remove it from the pages have it and don't need it
+						if(App.Page.FIXTURES[i].elements.indexOf(elemID) > -1){
+
+							console.log('ElementController: removing element id from ' + App.Page.FIXTURES[i].id);
+							App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(elemID),1);
+						}
+					}
+				}
+
+				this.set('isEditing', false);
+				this.set('tempPages', '');
+			}
 		},
 	    deleteElement: function(element) {
 
@@ -367,6 +374,9 @@ DELETE ELEMENT REPORTING THE ELEMENT TO THE CONTROLLER OR TO THE ROUTE!!!! VEURE
 		        element.deleteRecord();
 		        element.save();
 		        this.transitionToRoute('elements.index');
+		    }else{
+
+		    	return false;
 		    }
 		}
 	}
@@ -377,6 +387,10 @@ DELETE ELEMENT REPORTING THE ELEMENT TO THE CONTROLLER OR TO THE ROUTE!!!! VEURE
 */
 App.ConfigView = Ember.View.extend({
 
+	timeStamp: '',
+	// A random alphanumeric string of characters, used to namespace storage
+    // Can be changed in order to clear all stored elements for future updates
+	uuid: '',
 	flexID: '',
 	GenieJC : '',
 	ConversionID : '',
@@ -394,6 +408,7 @@ App.ConfigView = Ember.View.extend({
 		var page = {};	
 		var elementArray = [];
 		var element = {};
+		var regex = {};
 			
 			for(var j = 0; j<App.Page.FIXTURES.length; j++){
 
@@ -402,6 +417,7 @@ App.ConfigView = Ember.View.extend({
 				page.pageType = App.Page.FIXTURES[j].pageType;
 				page.addresses = App.Page.FIXTURES[j].addresses;
 				page.elements = App.Page.FIXTURES[j].elements;
+				page.dynamicIdentifiers = App.Page.FIXTURES[j].dynamicIdentifiers;
 
 				pageArray.push(page);
 				page = {};
@@ -412,14 +428,39 @@ App.ConfigView = Ember.View.extend({
 				element.id = App.Element.FIXTURES[z].id;
 				element.name = App.Element.FIXTURES[z].name;
 				element.selector = App.Element.FIXTURES[z].selector;
+				element.fallback = App.Element.FIXTURES[z].fallback;
 				element.pages = App.Element.FIXTURES[z].pages;
+
+				regex.include = App.Element.FIXTURES[z].regexInclude;
+				regex.exclude = App.Element.FIXTURES[z].regexExclude;
+
+				element.regex = regex;
 
 				elementArray.push(element);
 				element = {};
+				regex = {};
 		}
 
 		this.pages = formatPages(pageArray);
 		this.elements = formatElements(elementArray);
+	}
+});
+
+App.ConfigController = Ember.ObjectController.extend({
+
+	version: '2.0.0',
+	/*
+    * Rather than inserting img pixels into the DOM it's possible to generate
+    *the same request using JavaScript. This is much more performant.
+    */
+    avoidDOM: 'false',
+	init: function(){
+
+		this._super();
+
+		this.set('timeStamp', new Date());
+
+		this.set('uuid',Math.random().toString(36).slice(2));
 	}
 });
 
@@ -444,6 +485,7 @@ function displayAlert(element, message, status){
                 	'<a href="#" class="close" data-dismiss="alert">&times;</a>'+
                 	'<strong>'+ messageTitle +'!</strong> <span>'+ message +'</span></div>';
 
+    console.log(messageTitle + ': ' + element + ' -> ' + message);
     $('.'+element+' .alert-slot').append(alert);
 }
 
@@ -460,10 +502,11 @@ function formatPages(pagesArray){
   for(var i = 0; i<pagesArray.length; i++){
 
     formattedArray += '<span class="configObject">{id:<span>'+pagesArray[i].id+'</span>,</span>';
-    formattedArray += '<span class="configObject">name:<span>'+pagesArray[i].name+'</span>,</span>';
-    formattedArray += '<span class="configObject">pageType:<span>'+pagesArray[i].pageType+'</span>,</span>';
+    formattedArray += '<span class="configObject">name:<span>"'+pagesArray[i].name+'"</span>,</span>';
+    formattedArray += '<span class="configObject">type:<span>"'+pagesArray[i].pageType+'"</span>,</span>';
     formattedArray += '<span class="configObject">'+formatAddresses(pagesArray[i].addresses)+'</span>';
-    formattedArray += '<span class="configObject">elements:[<span>'+pagesArray[i].elements+'</span>]}</span>';
+    formattedArray += '<span class="configObject">elements:[<span>'+pagesArray[i].elements+'</span>],</span>';
+    formattedArray += '<span class="configObject">'+formatDynamicId(pagesArray[i].dynamicIdentifiers)+'}</span>';
     formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
   }
 
@@ -475,16 +518,45 @@ function formatPages(pagesArray){
 
 function formatAddresses(addressesArray){
 
-	var formattedArray = 'addresses:[<span>';
+	var formattedArray = 'urls:[<span>';
 
 	for(var i = 0; i<addressesArray.length; i++){
 
-		formattedArray += '<span class="configObject">{url:<span>'+addressesArray[i].url+'</span>,</span>';
-		formattedArray += '<span class="configObject">name:<span>'+addressesArray[i].params+'</span>}</span>';
+		if(addressesArray[i].hasOwnProperty('params')){
+
+			formattedArray += '<span class="configObject">{url:<span>"'+addressesArray[i].url+'"</span>,</span>';
+			formattedArray += '<span class="configObject">params:{'; 
+			formattedArray += '<span class="configObject">'+ addressesArray[i].params.slice(0, addressesArray[i].params.indexOf('=')) +':<span>"'+addressesArray[i].params+'"</span>}</span>'; 
+			formattedArray += '}</span>'; 
+		}else{
+
+			formattedArray += '<span class="configObject"><span>"'+addressesArray[i].url+'"</span></span>';
+		}
 		formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
 	}
 
 	formattedArray += '</span>],';
+
+	return formattedArray;
+}
+
+function formatDynamicId(dynamicIDsArray){
+
+	var formattedArray = 'dynamicIdentifiers:[<span>';
+
+	for(var i = 0; i<dynamicIDsArray.length; i++){
+
+		formattedArray += '<span class="configObject">{selector:<span>"'+dynamicIDsArray[i].selector+'"</span>,</span>';
+		formattedArray += '<span class="configObject">criteria:<span>"'+dynamicIDsArray[i].criteria+'"</span>,</span>';
+		formattedArray += '<span class="configObject">values:<span>';
+		for(var j = 0; j<dynamicIDsArray[i].values.length; j++){		
+			formattedArray += '"'+dynamicIDsArray[i].values[j]+'"<span class="configObjectSeparator">,</span>';
+		}
+		formattedArray +='</span>}</span>';
+		formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
+	}
+
+	formattedArray += '</span>]';
 
 	return formattedArray;
 }
@@ -497,8 +569,13 @@ function formatElements(elementsArray){
   for(var i = 0; i<elementsArray.length; i++){
 
     formattedArray += '<span class="configObject">{id:<span>'+elementsArray[i].id+'</span>,</span>';
-    formattedArray += '<span class="configObject">name:<span>'+elementsArray[i].name+'</span>,</span>';
-    formattedArray += '<span class="configObject">selector:<span>'+elementsArray[i].selector+'</span>,</span>';
+    formattedArray += '<span class="configObject">name:<span>"'+elementsArray[i].name+'"</span>,</span>';
+    formattedArray += '<span class="configObject">selector:<span>"'+elementsArray[i].selector+'"</span>,</span>';
+    formattedArray += '<span class="configObject">fallback:<span>"'+elementsArray[i].fallback+'"</span>,</span>';
+    formattedArray += '<span class="configObject">regex:{';
+    formattedArray += '<span class="configObject">include:[<span>"'+elementsArray[i].regex.include+'"</span>],</span>';
+    formattedArray += '<span class="configObject">exclude:[<span>"'+elementsArray[i].regex.exclude+'"</span>]</span>';
+    formattedArray += '},</span>';
     formattedArray += '<span class="configObject">pages:[<span>'+elementsArray[i].pages+'</span>]}</span>';
     formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
   }
@@ -525,3 +602,9 @@ function nextID(fixtures){
 
 	return maxId;
 }
+
+
+$('.tab-pane .delete-button').click(function(){
+
+	
+});

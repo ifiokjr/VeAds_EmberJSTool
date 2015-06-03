@@ -150,6 +150,16 @@ input{
 	border: 1px solid #e7e7e7 !important;   MAKE THE PANEL BODY GET CLOSER!!!!!!!
 	border-width: 0 1px 4px 1px !important;
 }
+.grey-panel{
+
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	padding-top: 15px;
+}
+.grey-panel .container-fluid{
+
+	padding:0;
+}
 select{
 	border: 1px solid #ddd;
 	position: relative;
@@ -189,6 +199,17 @@ select option.ember-view{
   		font-style: normal;		  	
   		font-weight: bold;
 	}
+form input{
+	width: 18px;
+  	height: 18px;
+}
+form span{
+	margin: 10px;
+}
+form span input[type="radio"]{
+	margin-right: 5px;
+}
+
 /**
 * Tab panel
 */

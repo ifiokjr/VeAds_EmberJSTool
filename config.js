@@ -355,8 +355,6 @@
         mappingCriteria: 'contains', // [contains, equal]
         element: '#awesome' // depends on capture.type ( either jQuery selector or globalVariable)
       }
-
     }
-
   ],
 };

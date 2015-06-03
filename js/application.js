@@ -57,13 +57,13 @@ App.IndexController = Ember.Controller.extend({
 * Pages INDEX. We need controller to execute create Page and address.
 */
 App.PagesIndexController = Ember.Controller.extend({
-
+	controllerName: 'PagesIndexController',
 	pageTypeElements : ['product','basket','home','landing','login_reg','confirmation','customPage'],
 	actions: {		
 			createPage: function() {
 
-			var name = $('#newPName').val();
-			var type = $('#newTypeElements select option:selected').val();
+			var name = this.get('newPName');
+			var type = $('#newTypePages select option:selected').val();
 
 			var urls = [];
 
@@ -93,13 +93,15 @@ App.PagesIndexController = Ember.Controller.extend({
 				addresses: urls,
 				elements: ['Elements not selected']
 			});
-
+			appLog(this.controllerName,'REMINDER. elements array is empty.');
 
 			// Clear the "newName" text field
 			this.set('newPName', '');
 			this.set('newPType', '');	
 			$('.tab-pane:not(:first)').remove();
 			$('.nav-tabs li:not(:first)').remove();	
+			$('.tab-pane').addClass('active');
+			$('.nav-tabs li:first').addClass('active');
 			$('.alert').alert('close');
 
 			this.newInserted = true;
@@ -108,6 +110,8 @@ App.PagesIndexController = Ember.Controller.extend({
 			displayAlert('pages-index','This page is created without any elements associated.','warning');
 		},
 		createAddress : function() {
+
+			appLog(this.controllerName,'creating new address.');
 
 			var url = this.get('newPUrl');
 			var key = this.get('newPkey');
@@ -130,7 +134,9 @@ App.PagesIndexController = Ember.Controller.extend({
 		  		return; 
 		  	}
 
-		  	var newDiv = '<div role="tabpanel" class="tab-pane" id="tab'+ $('.tab-pane').length +'">'+
+		  	var newid = 'tab' + $('.tab-pane').length;
+
+		  	var newDiv = '<div role="tabpanel" class="tab-pane" id="'+ newid +'">'+
 
                 '<label class="inputLabel" for="newAddres">Url:</label><span class="pageInput addressUrl" contenteditable="true">'+ url + '</span>' +
                 '<span class="delete-button"><img src="img/trash.png" alt="delete" height="18" width="18"></span>';
@@ -145,6 +151,18 @@ App.PagesIndexController = Ember.Controller.extend({
 		  	$('.nav-tabs').append('<li role="presentation"><a href="#tab'+ $('.tab-pane').length +'" aria-controls="tab'+ $('.tab-pane').length+'" role="tab" data-toggle="tab">'+$('.tab-pane').length+'</a></li>');
 		  	$('.tab-content').append(newDiv);
 
+			appLog(this.controllerName,'appending the new address.');
+
+			$('#' + newid + ' .delete-button').click(function(){
+
+			    $('#' + newid).remove();
+				$('[aria-controls="'+newid+'"]').parent().remove();
+				$('.nav-tabs li').removeClass('active')
+				$('.nav-tabs li:first').addClass('active');
+				$('.tab-pane').removeClass('active');
+				$('.tab-pane:first').addClass('active');
+			});
+
 		  	this.set('newPUrl', '');
 			this.set('newPkey', '');
 			this.set('newPvalue', '');
@@ -152,20 +170,30 @@ App.PagesIndexController = Ember.Controller.extend({
   	}
 });
 
-App.PageController = Ember.ObjectController.extend({
 
+/*****************
+* PAGE CONTROLLER: controller for the display of the created pages view
+* 
+* edit: sets the edit mode available.
+* doneEditing: saves the changes and sets the editing mode off.
+* deletePage: deletion of the page, considering the elements applied. If element is empty after page removal, element is removed.
+*****************/
+App.PageController = Ember.ObjectController.extend({
+	controllerName: 'PageController',
 	isEditing: false,
 	actions:{
 		edit: function(){
 
 			this.set('isEditing', true);
 		},
-		doneEditing: function(){
+		doneEditing: function(element){
 
-			console.log('PageController: editing the page with id ' + this.get('id'));
-			this.set('name', this.get('name'));
-			this.set('addresses', this.get('addresses'));
+			appLog(this.controllerName,'editing the page with id ' + this.get('id'));
 
+			element.set('name', this.get('name'));
+			element.set('addresses', this.get('addresses'));
+
+			element.save();
 			this.set('isEditing', false);
 		},
 		deletePage: function(page) {
@@ -200,42 +228,48 @@ App.PageController = Ember.ObjectController.extend({
 *  				  We need controller to execute create Element.
 */
 App.ElementsIndexView = Ember.View.extend({
+	controllerName: 'ElementsIndexView',
+	didInsertElement : function(){//Function executed after the object is inserted on the template
 
-  didInsertElement : function(){//Function executed after the object is inserted on the template
+		this._super();
 
-    this._super();
+		var pList = "";
 
-	var pList = "";
+		for(var i = 0; i < App.Page.FIXTURES.length; i++){
 
-	for(var i = 0; i < App.Page.FIXTURES.length; i++){
+			$('.dropdown .multiSelect ul').append("<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /> Name: <span>"+App.Page.FIXTURES[i].name+"</span> ID:<span>"+App.Page.FIXTURES[i].id+"</span></li>");
+		}
 
-		$('.multiSelect ul').append("<li><input type='checkbox' value='"+App.Page.FIXTURES[i].id+"' /> Name: <span>"+App.Page.FIXTURES[i].name+"</span> ID:<span>"+App.Page.FIXTURES[i].id+"</span></li>");
+		$('.dropdown .multiSel').click(function(){
+			$(".dropdown dd ul").slideToggle('fast');
+		});
+
+		$('.dropdown input[type=checkbox]').click(function(){
+
+			$('.checkedSelected').text($('.dropdown input[type=checkbox]:checked').length);
+		})
 	}
-
-	$('.multiSel').click(function(){
-		$(".dropdown dd ul").slideToggle('fast');
-	});
-
-	$('input[type=checkbox]').click(function(){
-
-		$('.checkedSelected').text($('input[type=checkbox]:checked').length);
-	})
-  }
 });
 
 App.ElementsIndexController = Ember.Controller.extend({
-
+	controllerName: 'ElementsIndexController',
+	dataTypeElements : ['orderId','orderVal','productId','idList','itemString','currency','other'],
 	actions: {
 		createElement: function() {
 
-		  // Get the page name by the newPage field
+		  	appLog(this.controllerName,'element creation');
 			var name = this.get('newEName');
-			var selector = this.get('newESelector');
+			var type = $('#newTypeElements select option:selected').val();
 			var fallback = this.get('newEfallback');
 			var regexInclude = this.get('newEregexInclude');
 			var regexExclude = this.get('newEregexExclude');
+			var captureSelector = this.get('newESelector');
+			var captureCriteria = $('#newECriteria [name="newECriteria"]:checked').val();
+			var captureUseMappings = this.get('newEFormMappigns');
+			var captureType = $('#newEType [name="newEType"]:checked').val();
 
-		  	if (name === undefined || selector === undefined) { 
+
+		  	if (name === undefined || captureSelector === undefined) { 
 
 		  		displayAlert('element-index','Fill up all the fields please...','danger');
 		  		return; 
@@ -249,7 +283,7 @@ App.ElementsIndexController = Ember.Controller.extend({
 
 			var pages = [];
 
-			$('input[type=checkbox]:checked').each(function(i, selected){ 
+			$('.dropdown input[type=checkbox]:checked').each(function(i, selected){ 
 				pages[i] = $(selected).val(); 
 			});
 
@@ -258,11 +292,15 @@ App.ElementsIndexController = Ember.Controller.extend({
 
 		    	id: nextID(App.Element.FIXTURES),
 			    name: name,
-				selector: selector,
+			    elementType: type,
 				fallback: fallback,
 				regexInclude: regexInclude,
 			    regexExclude: regexExclude,
-				pages: pages
+				pages: pages,
+				captureSelector: captureSelector,
+				captureCriteria: captureCriteria,
+				captureUseMappings: captureUseMappings,
+				captureType: captureType
 		  	});
 
 		  	/*Double binding the elements/pages through the IDs*/
@@ -270,7 +308,8 @@ App.ElementsIndexController = Ember.Controller.extend({
 				for(var ii = 0; ii < App.Page.FIXTURES.length; ii++){
 
 					if(pages[i] == App.Page.FIXTURES[ii].id){
-
+		  				
+		  				appLog(this.controllerName,'double binding element with page id:' + App.Page.FIXTURES[ii].id);
 						App.Page.FIXTURES[ii].elements.push(element.id);
 					}
 				}
@@ -282,7 +321,7 @@ App.ElementsIndexController = Ember.Controller.extend({
 			this.set('newEregexExclude', '');
 			this.set('newEregexInclude', '');
 			this.set('newEfallback', '');
-			$('input[type=checkbox]:checked').attr('checked', false);
+			$('.dropdown input[type=checkbox]:checked').attr('checked', false);
 			$('.checkedSelected').text(0);
 			$('.dropdown dd ul').hide('fast');
 			$('.alert').alert('close');
@@ -293,6 +332,7 @@ App.ElementsIndexController = Ember.Controller.extend({
 });
 
 App.ElementController = Ember.ObjectController.extend({
+	controllerName: 'ElementController',
 	isEditing: false,
 	actions:{
 		edit: function(element){
@@ -309,7 +349,7 @@ App.ElementController = Ember.ObjectController.extend({
 			var index;
 
 			//Editing and saving the element.
-			console.log('ElementController: saving the element with id ' + elemID);
+			appLog(this.controllerName,'saving the element with id ' + elemID);
 
 			if(newPages.length < 1){
 
@@ -317,22 +357,26 @@ App.ElementController = Ember.ObjectController.extend({
 
 					if(!this.send('deleteElement', element)){
 
-						console.log('ElementController: setting back the pages to the original');
+						appLog(this.controllerName,'setting back the pages to the original');
 						this.set('pages', this.get('tempPages'));
 					}
 				}else{
 
-					console.log('ElementController: setting back the pages to the original');
+					appLog(this.controllerName,'setting back the pages to the original');
 					this.set('pages', this.get('tempPages'));
 				}
 			}else{
 
-				this.set('name', this.get('name'));
-				this.set('selector', this.get('selector'));
-				this.set('pages', newPages);
-				this.set('fallback', this.get('fallback'));
-				this.set('regexInclude', this.get('regexInclude'));
-				this.set('regexExclude', this.get('regexExclude'));
+				element.set('name',this.get('name'));
+				element.set('selector', this.get('selector'));
+				element.set('pages', newPages);
+				element.set('fallback', this.get('fallback'));
+				element.set('regexInclude', this.get('regexInclude'));
+				element.set('regexExclude', this.get('regexExclude'));
+				element.set('captureType', this.get('captureType'));
+				element.set('captureUseMappings', this.get('captureUseMappings'));
+				element.set('captureCriteria', this.get('captureCriteria'));
+				element.set('captureSelector', this.get('captureSelector'));
 
 				//Editing the pages related to the element
 				for(var i = 0; i < App.Page.FIXTURES.length; i++){
@@ -342,18 +386,18 @@ App.ElementController = Ember.ObjectController.extend({
 					if(index > -1){//We push this element to the pages don't have it and need it
 						if(App.Page.FIXTURES[i].elements.indexOf(elemID) == -1){
 
-							console.log('ElementController: pushing element id to page ' + App.Page.FIXTURES[i].id);
+							appLog(this.controllerName,'pushing element id to page ' + App.Page.FIXTURES[i].id);
 							App.Page.FIXTURES[i].elements.push(elemID);
 						}
 					}else{//We remove it from the pages have it and don't need it
 						if(App.Page.FIXTURES[i].elements.indexOf(elemID) > -1){
 
-							console.log('ElementController: removing element id from ' + App.Page.FIXTURES[i].id);
+							appLog(this.controllerName,'removing element id from ' + App.Page.FIXTURES[i].id);
 							App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(elemID),1);
 						}
 					}
 				}
-
+				element.save();
 				this.set('isEditing', false);
 				this.set('tempPages', '');
 			}
@@ -384,12 +428,12 @@ App.ElementController = Ember.ObjectController.extend({
 
 /*
 * CONFIG. Just displaying, we need view but no controller.
+*
+* @timeStamp - A random alphanumeric string of characters, used to namespace storage. Can be changed in order to clear all stored elements for future updates
 */
 App.ConfigView = Ember.View.extend({
-
+	controllerName: 'ConfigView',
 	timeStamp: '',
-	// A random alphanumeric string of characters, used to namespace storage
-    // Can be changed in order to clear all stored elements for future updates
 	uuid: '',
 	flexID: '',
 	GenieJC : '',
@@ -402,6 +446,7 @@ App.ConfigView = Ember.View.extend({
 	didInsertElement : function(){//Function executed after the object is inserted on the template
 
 		this._super();
+		appLog(this.controllerName,'Rendering config element');
 
 		/*** We need to set the pages/elements objects after inserting the view, as properties can be observed from fixtures, but not updated after controller.init() ***/
 		var pageArray = [];
@@ -417,7 +462,7 @@ App.ConfigView = Ember.View.extend({
 				page.pageType = App.Page.FIXTURES[j].pageType;
 				page.addresses = App.Page.FIXTURES[j].addresses;
 				page.elements = App.Page.FIXTURES[j].elements;
-				page.dynamicIdentifiers = App.Page.FIXTURES[j].dynamicIdentifiers;
+				//page.dynamicIdentifiers = App.Page.FIXTURES[j].dynamicIdentifiers;
 
 				pageArray.push(page);
 				page = {};
@@ -427,7 +472,11 @@ App.ConfigView = Ember.View.extend({
 
 				element.id = App.Element.FIXTURES[z].id;
 				element.name = App.Element.FIXTURES[z].name;
-				element.selector = App.Element.FIXTURES[z].selector;
+				element.elementType = App.Element.FIXTURES[z].elementType;
+				element.captureType = App.Element.FIXTURES[z].captureType;
+				element.captureUseMappings = App.Element.FIXTURES[z].captureUseMappings;
+				element.captureCriteria = App.Element.FIXTURES[z].captureCriteria;
+				element.captureSelector = App.Element.FIXTURES[z].captureSelector;
 				element.fallback = App.Element.FIXTURES[z].fallback;
 				element.pages = App.Element.FIXTURES[z].pages;
 
@@ -447,7 +496,7 @@ App.ConfigView = Ember.View.extend({
 });
 
 App.ConfigController = Ember.ObjectController.extend({
-
+	controllerName: 'ConfigController',
 	version: '2.0.0',
 	/*
     * Rather than inserting img pixels into the DOM it's possible to generate
@@ -458,6 +507,7 @@ App.ConfigController = Ember.ObjectController.extend({
 
 		this._super();
 
+		appLog(this.controllerName, 'Initializing controller');
 		this.set('timeStamp', new Date());
 
 		this.set('uuid',Math.random().toString(36).slice(2));
@@ -506,7 +556,7 @@ function formatPages(pagesArray){
     formattedArray += '<span class="configObject">type:<span>"'+pagesArray[i].pageType+'"</span>,</span>';
     formattedArray += '<span class="configObject">'+formatAddresses(pagesArray[i].addresses)+'</span>';
     formattedArray += '<span class="configObject">elements:[<span>'+pagesArray[i].elements+'</span>],</span>';
-    formattedArray += '<span class="configObject">'+formatDynamicId(pagesArray[i].dynamicIdentifiers)+'}</span>';
+    //formattedArray += '<span class="configObject">'+formatDynamicId(pagesArray[i].dynamicIdentifiers)+'}</span>';
     formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
   }
 
@@ -570,11 +620,16 @@ function formatElements(elementsArray){
 
     formattedArray += '<span class="configObject">{id:<span>'+elementsArray[i].id+'</span>,</span>';
     formattedArray += '<span class="configObject">name:<span>"'+elementsArray[i].name+'"</span>,</span>';
-    formattedArray += '<span class="configObject">selector:<span>"'+elementsArray[i].selector+'"</span>,</span>';
     formattedArray += '<span class="configObject">fallback:<span>"'+elementsArray[i].fallback+'"</span>,</span>';
     formattedArray += '<span class="configObject">regex:{';
     formattedArray += '<span class="configObject">include:[<span>"'+elementsArray[i].regex.include+'"</span>],</span>';
     formattedArray += '<span class="configObject">exclude:[<span>"'+elementsArray[i].regex.exclude+'"</span>]</span>';
+    formattedArray += '},</span>';
+    formattedArray += '<span class="configObject">capture:{';
+    formattedArray += '<span class="configObject">type:<span>"'+elementsArray[i].captureType+'"</span>,</span>';
+    formattedArray += '<span class="configObject">useMappings:<span>'+elementsArray[i].captureUseMappings+'</span>,</span>';
+    formattedArray += '<span class="configObject">mappingCriteria:<span>"'+elementsArray[i].captureCriteria+'"</span>,</span>';
+    formattedArray += '<span class="configObject">element:<span>"'+elementsArray[i].captureSelector+'"</span></span>';
     formattedArray += '},</span>';
     formattedArray += '<span class="configObject">pages:[<span>'+elementsArray[i].pages+'</span>]}</span>';
     formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
@@ -585,7 +640,6 @@ function formatElements(elementsArray){
   $('.configObject.elements').empty();
   $('.configObject.elements').append(formattedArray);
 }
-
 
 function nextID(fixtures){
 
@@ -603,8 +657,7 @@ function nextID(fixtures){
 	return maxId;
 }
 
+function appLog(name, message){
 
-$('.tab-pane .delete-button').click(function(){
-
-	
-});
+	console.log(name + ': ' + message)
+}

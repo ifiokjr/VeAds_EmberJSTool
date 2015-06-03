@@ -66,29 +66,13 @@
       <b>TODOS:</b>
 
       <br><br>
-      Creation page -> create dynamic identifiers.
-      <br><br>
-      finish with removing of addresses
-      <pre>$('.tab-pane .delete-button').click(function(){
-
-      var id = $(this).parent().attr('id');
-
-      $(this).parent().remove();
-      $('[aria-controls="'+id+'"]').parent().remove();
-      })</pre>
-      remove address from the tabs.
-      <br><br>
-      change element selector to be object.
+      Creation page -> create dynamic identifiers.  
       <br><br>
       Review 1 by 1 all the elements are implemented. View, Model and Config.
       <br><br>
       see bootswatch
       <br><br>
       localforage to persist the fixtures.
-      <br><br>
-      include dynamic identifiers
-      <br><br>
-      If editing the elements, the element object removed removed, say that the element will be removed.
       <br><br>
     </div>
   </script>
@@ -147,12 +131,12 @@
         <div class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Name:</label>
           <span class="pageInput">
-            {{input type="text" class="form-control" id="newPName" placeholder="New name"}}
+            {{input type="text" class="form-control" id="newPName" value=newPName placeholder="New name"}}
            </span>
         </div>        
       </div>
       <div class="row panel-body">
-        <div id="newTypeElements" class="col-xs-12 form-group">
+        <div id="newTypePages" class="col-xs-12 form-group">
           <label class="inputLabel" for="newPage">Page type Selection:</label>
           <span class="pageInput">
             {{view "select" content=pageTypeElements}}
@@ -239,7 +223,7 @@
     <div class="edit-button">
       {{#if isEditing}}
         Editing...
-        <button class="btn btn-primary btn-sm" {{action "doneEditing"}} >Done</button>
+        <button class="btn btn-primary btn-sm" {{action "doneEditing" this}} >Done</button>
         <div>
           {{partial 'pageedit'}}
         </div>
@@ -247,20 +231,19 @@
         <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
       {{/if}}
     </div>
-    <div class="intro">
-      {{pageType}}
+	<div>
+      <strong>type:</strong> <span>{{pageType}}</span>
     </div> 
-
-    <div class="below-the-fold">
+    <div>
       {{address}}
     </div> 
-    <div class="below-the-fold">
+    <div>
       {{#each elem in addresses}} <!--/*These are the pages defined on the route*/-->
           <div><strong>Url:</strong><span>{{elem.url}}</span> <strong>Params:</strong><span>{{elem.params}}</span></div>
       {{/each}}
     </div>   
-    <div class="intro">
-      Elements applied: [<span>{{elements}}</span>]
+	<div>
+      <strong>Elements applied:</strong> [<span>{{elements}}</span>]
     </div> 
   </script>
 
@@ -332,15 +315,66 @@
         </div>        
       </div>
       <div class="row panel-body">
-        <div class="col-xs-12 form-group">
-          <label class="inputLabel" for="newESelector">Element selector:</label>
+        <div id="newTypeElements" class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Element type Selection:</label>
           <span class="pageInput">
-            {{input type="text" id="newESelector" class="form-control" placeholder="#exampleId" value=newESelector insert-newline="createElement"}}
+            {{view "select" content=dataTypeElements}}
           </span>
         </div>        
-      </div>  
+      </div>
       <div class="row panel-body">
-        <div class="col-xs-12 form-group tab-pane">
+        <div class="col-xs-12 form-group grey-panel">
+
+          <label class="inputLabel">Capture Info:</label>
+
+          <div class="container-fluid">
+          	<div class="row">
+	            <div id="newEType" class="col-xs-12 form-group">
+					<label class="inputLabel">Type:</label>
+					<span class="pageInput">
+						<form>
+							<span><input type="radio" name="newEType" value="selector" checked>Selector</span>
+							<span><input type="radio" name="newEType" value="globalVariable">Global Variable</span>						
+							<span><input type="radio" name="newEType" value="dataLayer">Data Layer</span>
+							<span><input type="radio" name="newEType" value="dataLayerReverse">Data Layer Reverse</span>
+						</form>
+					</span>  
+	            </div> 
+	        </div>
+	        <div class="row">
+	            <div id="newECriteria" class="col-xs-12 form-group">
+					<label class="inputLabel">Criteria:</label>
+					<span class="pageInput">
+						<form>
+							<span><input type="radio" name="newECriteria" value="contains" checked>Contains</span>
+							<span><input type="radio" name="newECriteria" value="equal">Equal</span>
+						</form>
+					</span>
+	            </div> 
+	        </div>
+	       	<div class="row">
+	            <div class="col-xs-12 form-group">
+					<label class="inputLabel">Selector:</label>
+					<span class="pageInput">
+						{{input type="text" id="newESelector" class="form-control" placeholder="#exampleId / variableName" value=newESelector insert-newline="createElement"}}
+					</span>  
+	            </div> 
+	        </div>
+            <div class="row">
+	          	<div class="col-xs-12 form-group">
+	            	<label class="inputLabel">Use formmappings:</label>
+	            	<span class="pageInput">
+	            		<form>
+	              			{{input type="checkbox" id="newEFormMappigns" checked=newEFormMappigns insert-newline="createElement"}}
+	              		</form>
+	            	</span>   
+	          	</div>      
+            </div> 
+          </div>
+        </div>        
+      </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group grey-panel">
 
           <label class="inputLabel">Regex:</label>
 
@@ -373,7 +407,7 @@
       </div>      
       <div class="row panel-body">
         <div class="col-xs-12 form-group pages-to-apply">
-          <label class="inputLabel" for="newPage">Pages to apply:</label>
+          <label class="inputLabel">Pages to apply:</label>
 
           I want to hide this on a dropdown. Add some dropdown icon
           <dl class="dropdown"> 
@@ -442,17 +476,24 @@
         <button class="btn btn-primary btn-sm" {{action "edit" this}} >Edit</button>
       {{/if}}
     </div>
-    <div class="intro">
-      Selector: <span>{{selector}}</span>
+	<div>
+	<strong>Capture:</strong> 	
+		<div>Selector: <span>{{captureSelector}}</span></div>
+		<div>Type: <span>{{captureType}}</span></div>
+		<div>Criteria: <span>{{captureCriteria}}</span></div>
+		<div>UseMappings: <span>{{captureUseMappings}}</span></div>
+    </div>      
+	<div>
+      <strong>type:</strong>  <span>{{elementType}}</span>
     </div>  
-    <div class="intro">
-      Fallback: <span>{{fallback}}</span>
+	<div>
+      <strong>Fallback:</strong>  <span>{{fallback}}</span>
     </div>     
-    <div class="intro">
-      Regex: Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
+	<div>
+      <strong>Regex:</strong> Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
     </div>                 
-    <div class="intro">
-      Pages to apply: <span>{{pages}}</span>
+    <div>
+      <strong>Pages to apply:</strong>  [<span>{{pages}}</span>]
     </div> 
   </script>
 
@@ -463,7 +504,19 @@
       </span>
       Selector:
       <span>
-        {{textarea valueBinding='selector'}}
+        {{textarea valueBinding='captureSelector'}}
+      </span>        
+      Type:
+      <span>
+        {{textarea valueBinding='captureType'}}
+      </span>  
+      Criteria:
+      <span>
+        {{textarea valueBinding='captureCriteria'}}
+      </span>        
+      UseMappings:
+      <span>
+        {{textarea valueBinding='captureUseMappings'}}
       </span>      
       Fallback:
       <span>

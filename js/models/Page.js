@@ -1,7 +1,11 @@
-/**
+/*******************************
 *
-* MODEL
-*/
+* PAGE MODEL
+* 
+* @pageType ['product','basket','home','landing','login_reg','confirmation','customPage']
+* @addresses  - array of address objects with url + params || url
+* @elements - array of element IDs applied to this page
+*******************************/
 App.Page = DS.Model.extend({
    	name: DS.attr('string'),
 	pageType: DS.attr('string'),

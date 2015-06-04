@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <title>VeAds_Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/normalize.css">
-  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/bootstrap.css">
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">   
+  <link rel="stylesheet" href="css/style.css"> 
+  <link href='http://fonts.googleapis.com/css?family=Neuton:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
@@ -31,6 +33,7 @@
             <li>{{#link-to 'about'}}About{{/link-to}}</li>
             <li>{{#link-to 'pages'}}Pages{{/link-to}}</li>
             <li>{{#link-to 'elements'}}Elements{{/link-to}}</li>
+            <li>{{#link-to 'pixels'}}Pixels{{/link-to}}</li>
             <li>{{#link-to 'config'}}Config{{/link-to}}</li>
           </ul>
         </div>
@@ -66,11 +69,11 @@
       <b>TODOS:</b>
 
       <br><br>
+      When modifying page or element, recalculate the pages / elements applied on pixels.
+            <br><br>
+      Creation of pages, elements & pixels, review the errors (fields nor empty...and with values that we expect)
+      <br><br>
       Creation page -> create dynamic identifiers.  
-      <br><br>
-      Review 1 by 1 all the elements are implemented. View, Model and Config.
-      <br><br>
-      see bootswatch
       <br><br>
       localforage to persist the fixtures.
       <br><br>
@@ -82,7 +85,7 @@
 <!-- PAGES -->
 <!-- ***** -->
   <script type="text/x-handlebars" id="pages">
-        <!--/*[:TODO] - Creation of an index page for the pages viewer*/-->
+
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12 col-sm-4">
@@ -231,19 +234,21 @@
         <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
       {{/if}}
     </div>
-	<div>
-      <strong>type:</strong> <span>{{pageType}}</span>
-    </div> 
-    <div>
-      {{address}}
-    </div> 
-    <div>
-      {{#each elem in addresses}} <!--/*These are the pages defined on the route*/-->
-          <div><strong>Url:</strong><span>{{elem.url}}</span> <strong>Params:</strong><span>{{elem.params}}</span></div>
-      {{/each}}
-    </div>   
-	<div>
-      <strong>Elements applied:</strong> [<span>{{elements}}</span>]
+	<div class="modelContent">
+		<div>
+	      <strong>type:</strong> <span>{{pageType}}</span>
+	    </div> 
+	    <div>
+	      {{address}}
+	    </div> 
+	    <div>
+	      {{#each elem in addresses}} <!--/*These are the pages defined on the route*/-->
+	          <div><strong>Url:</strong><span>{{elem.url}}</span> <strong>Params:</strong><span>{{elem.params}}</span></div>
+	      {{/each}}
+	    </div>   
+		<div>
+	      <strong>Elements applied:</strong> [<span>{{elements}}</span>]
+	    </div> 
     </div> 
   </script>
 
@@ -300,7 +305,7 @@
   </script>
 
   <script type="text/x-handlebars" id="elements/index">
-    <div class="container-fluid panel panel-primary element-index">
+    <div class="container-fluid panel panel-primary elements-index">
       <div class="row panel-heading">
         <div class="col-xs-12">
           <h4 class="panel-title">New Element Creation</h4>
@@ -383,14 +388,14 @@
               <div class="col-xs-6 form-group">
                 <label class="inputLabel" for="newEregexinclude">Include</label>
                 <span class="pageInput">
-                  {{input type="text" id="newEregexinclude" class="form-control" placeholder="e;kj;k" value=newEregexInclude insert-newline="createElement"}}
+                  {{input type="text" id="newEregexinclude" class="form-control" placeholder="" value=newEregexInclude insert-newline="createElement"}}
                 </span>   
               </div>  
 
               <div class="col-xs-6 form-group">
                 <label class="inputLabel" for="newEregexexclude">Exclude</label>
                 <span class="pageInput">
-                  {{input type="text" id="newEregexexclude" class="form-control" placeholder=";kj;k" value=newEregexExclude insert-newline="createElement"}}
+                  {{input type="text" id="newEregexexclude" class="form-control" placeholder="" value=newEregexExclude insert-newline="createElement"}}
                 </span>   
               </div>  
             </div> 
@@ -408,8 +413,6 @@
       <div class="row panel-body">
         <div class="col-xs-12 form-group pages-to-apply">
           <label class="inputLabel">Pages to apply:</label>
-
-          I want to hide this on a dropdown. Add some dropdown icon
           <dl class="dropdown"> 
             
               <dt>
@@ -421,17 +424,8 @@
                   <ul>
                     <!--/*
                     Example of how it looks like:
-                    <li><input type='checkbox' value='0' /> Name:<span>Example Name</span> ID:<span>0</span></li>
-                    <li><input type='checkbox' value='1' /><span>1</span> <span>Product Page</span></li>
-                    <li><input type='checkbox' value='2' /><span>2</span> <span>Basket Page</span></li>*/-->
+                    <li><input type='checkbox' value='0' /> Name:<span>Example Name</span> ID:<span>0</span></li>*/-->
                   </ul>
-                <!--/*We should do value={{page.id}} but it's not supported yet, so if we want value=ID we need to do it manually
-                  <ul>
-                    {{#each page in currentPages}}
-
-                        <li><input type="checkbox" value={{page.id}} /><span>{{page.id}}</span> <span>{{page.name}}</span></li>
-                    {{/each}}
-                  </ul>*/-->
                 </div>
               </dd>
           </dl>
@@ -476,24 +470,26 @@
         <button class="btn btn-primary btn-sm" {{action "edit" this}} >Edit</button>
       {{/if}}
     </div>
-	<div>
-	<strong>Capture:</strong> 	
-		<div>Selector: <span>{{captureSelector}}</span></div>
-		<div>Type: <span>{{captureType}}</span></div>
-		<div>Criteria: <span>{{captureCriteria}}</span></div>
-		<div>UseMappings: <span>{{captureUseMappings}}</span></div>
-    </div>      
-	<div>
-      <strong>type:</strong>  <span>{{elementType}}</span>
-    </div>  
-	<div>
-      <strong>Fallback:</strong>  <span>{{fallback}}</span>
-    </div>     
-	<div>
-      <strong>Regex:</strong> Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
-    </div>                 
-    <div>
-      <strong>Pages to apply:</strong>  [<span>{{pages}}</span>]
+	<div class="modelContent">
+		<div>
+			<strong>Capture:</strong> 	
+			<div>Selector: <span>{{captureSelector}}</span></div>
+			<div>Type: <span>{{captureType}}</span></div>
+			<div>Criteria: <span>{{captureCriteria}}</span></div>
+			<div>UseMappings: <span>{{captureUseMappings}}</span></div>
+	    </div>      
+		<div>
+	      <strong>type:</strong>  <span>{{elementType}}</span>
+	    </div>  
+		<div>
+	      <strong>Fallback:</strong>  <span>{{fallback}}</span>
+	    </div>     
+		<div>
+	      <strong>Regex:</strong> Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
+	    </div>                 
+	    <div>
+	      <strong>Pages to apply:</strong>  [<span>{{pages}}</span>]
+	    </div> 
     </div> 
   </script>
 
@@ -536,6 +532,221 @@
       </span>
   </script>
 
+<!-- ****** -->
+<!-- PIXELS -->
+<!-- ****** -->
+  <script type="text/x-handlebars" id="pixels">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12 col-sm-4">
+          <table class="table">
+            <thead>
+              <tr><th><h4>Recent Pixels</h4></th></tr>
+            </thead>
+            <tbody>
+             {{#each elem in model}} <!--/*These are the pixels defined on the route*/-->
+                <tr><td>
+                  <span class='pageLine'>
+                    {{#link-to 'pixel' elem}}<span>{{elem.name}}</span>{{/link-to}}<span class='muted'> pageId: <span>{{elem.id}}</span></span>
+                    <span class="delete-button">
+                      <button {{action "deletePixel" elem}} >
+                        <img src="img/trash.png" alt="delete" height="18" width="18">
+                      </button>
+                    </span>
+                  </span>
+                </td></tr>
+              {{/each}}
+                <tr><td>
+                  <span class="pull-right">
+                    {{#link-to 'pixels'}}<div class="btn btn-primary btn-sm">Create Pixel</div>{{/link-to}}
+                 </span>
+                </td></tr>
+              </tbody>
+          </table>
+        </div>        
+        <div class="col-xs-12 col-sm-8">
+         {{outlet}}
+        </div>
+      </div>
+    </div>
+  </script>
+
+
+  <script type="text/x-handlebars" id="pixels/index">
+
+    <div class="container-fluid panel panel-primary pixels-index">
+      <div class="row panel-heading">
+        <div class="col-xs-12">
+          <h4 class="panel-title">New Pixel Creation</h4>
+        </div> 
+      </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Name:</label>
+          <span class="pageInput">
+            {{input type="text" class="form-control" id="newPName" value=newPixName placeholder="New name"}}
+           </span>
+        </div>        
+      </div>
+      <div class="row panel-body">
+        <div id="newTypePages" class="col-xs-12 form-group">
+          <label class="inputLabel" for="newPage">Pixel type Selection:</label>
+          <span class="pageInput">
+            {{view "select" content=pixelTypeElements}}
+          </span>
+        </div>        
+      </div> 
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+    			<div class="tab-content">
+      				<div role="tabpanel" class="tab-pane active" id="newve">
+
+      					<label class="inputLabel" for="newAddres">journeyCode:</label>
+      					<span class="pageInput">
+      					  {{input type="text" class="form-control" placeholder="aBceDelkj" value=newjourneyCode}}
+      					</span>                
+      				</div>
+            	<div role="tabpanel" class="tab-pane" id="newflex">
+
+	                <label class="inputLabel" for="newAddres">flexId:</label>
+	                <span class="pageInput">
+	                  {{input type="text" class="form-control" placeholder="123456" value=newflexId}}
+	                </span>                
+              	</div>
+            	<div role="tabpanel" class="tab-pane"  id="newdbm">
+
+	                <label class="inputLabel" for="newAddres">Cat:</label>
+	                <span class="pageInput">
+	                  {{input type="text" class="form-control" placeholder="asdf" value=newCat}}
+	                </span>  
+                  <label class="inputLabel" for="newAddres">Src:</label> 
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="fdas" value=newSrc}}
+                  </span>                
+              	</div>
+              <div role="tabpanel" class="tab-pane" id="newappNexus">
+
+                  <label class="inputLabel" for="newAddres">segmentROS:</label>
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="111111" value=newsegmentROS}}
+                  </span>   
+                  <label class="inputLabel" for="newAddres">segmentProduct:</label>
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="222222" value=newsegmentProduct}}
+                  </span>   
+                  <label class="inputLabel" for="newAddres">segmentConversion:</label>
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="333333" value=newsegmentConversion}}
+                  </span>  
+                  <label class="inputLabel" for="newAddres">conversionId:</label> 
+                  <span class="pageInput">
+                    {{input type="text"  class="form-control" placeholder="654321" value=newconversionId}}
+                  </span>                
+                </div>
+                <div role="tabpanel" class="tab-pane" id="newcustomROS">
+
+                  <label class="inputLabel" for="newAddres">Custom ROS:</label>
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="http://www....." value=newcustomROS}}
+                  </span> 
+                </div>
+                <div role="tabpanel" class="tab-pane" id="newcustomConversion">
+
+                  <label class="inputLabel" for="newAddres">Custom Conversion:</label>
+                  <span class="pageInput">
+                    {{input type="text" class="form-control" placeholder="http://www....." value=newcustomConversion}}
+                  </span> 
+                </div>
+            </div>             
+        </div>        
+      </div>
+
+
+      <div class="row panel-body">
+        <div class="col-xs-12 form-group pages-to-apply">
+          <label class="inputLabel">Pages to apply:</label>
+          <dl class="dropdown"> 
+            
+              <dt>
+                <span class="multiSel">Select<span class="checkedSelected">0</span></span>   
+              </dt>
+            
+              <dd>
+                <div class="multiSelect">
+                  <ul>
+                    <!--/*
+                    Example of how it looks like:
+                    <li><input type='checkbox' value='0' /> Name:<span>Example Name</span> ID:<span>0</span></li>*/-->
+                  </ul>
+                </div>
+              </dd>
+          </dl>
+        </div>        
+      </div>
+      <div class="row panel-footer">
+        <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10 alert-slot">    
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2">  
+          <span class="pageInput pull-right">
+            <button class="btn btn-primary btn-sm" {{action "createPixel"}} >Create Pixel</button>
+          </span>      
+        </div>      
+      </div>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" id="pixel">
+
+    <div class="modelTitle">
+
+      <h1>{{name}}</h1>
+      <h2>with ID: <span>{{id}}</span></h2>
+      <span class="delete-button">
+        <button {{action "deletePixel" this}} >
+          <img src="img/trash.png" alt="delete" height="18" width="18">
+        </button>
+      </span>
+    </div>
+    <div class="edit-button">
+      {{#if isEditing}}
+        Editing...
+        <button class="btn btn-primary btn-sm" {{action "doneEditing" this}} >Done</button>
+        <div>
+          {{partial 'pixeledit'}}
+        </div>
+      {{else}}
+        <button class="btn btn-primary btn-sm" {{action "edit"}} >Edit</button>
+      {{/if}}
+    </div>
+	<div class="modelContent">
+		<div>
+	      <strong>type:</strong> <span>{{pixelType}}</span>
+	    </div> 
+	    <div>
+	      <strong>Pages applied:</strong> [<span>{{pages}}</span>]
+	    </div>
+      <div>
+        <strong>Elements applied:</strong> [<span>{{elements}}</span>]
+      </div> 
+      <div>
+        <strong>Elements applied:</strong> [<span>{{config}}</span>]
+      </div> 
+    </div> 
+  </script>
+
+  <!--/*<script type="text/x-handlebars" id="_pixeledit">
+      Name:
+      <span>
+        {{textarea valueBinding='name'}}
+      </span> 
+      Addresses:     
+      <span>
+        {{#each elem in addresses}} 
+            <span>{{textarea valueBinding='elem.url'}}</span><span>{{textarea valueBinding='elem.params'}}</span>
+        {{/each}}
+      </span> 
+  </script>*/-->
+
 
 <!-- ****** -->
 <!-- CONFIG -->
@@ -557,12 +768,7 @@
                   <h4 class="panel-title">Global features:</h4>
                 </div>   
               </div>   
-              <div class="row panel-body">    
-               <!--/* <div class="col-xs-12 form-group">
-                    
-                  <label class="inputLabel">Flex ID:</label> 
-                  <span> {{input class="form-control" type="text" id="flexID" placeholder="6 Digit code" value=flexID}}</span> 
-                </div>     */  -->                         
+              <div class="row panel-body">                        
                 <div class="col-xs-12 form-group">
                     
                   <label class="inputLabel">Version:</label> 
@@ -572,49 +778,14 @@
                     
                   <label class="inputLabel">avoidDOM:</label> 
                   <span> {{input class="form-control" type="text" id="avoidDOM" value=avoidDOM}}</span> 
-                </div> 
-               <!--/* <div class="col-xs-12 form-group">
-
-                  <label class="inputLabel">Genie J.Code:</label>
-                  <span> {{input class="form-control" type="text" id='GenieJC' placeholder="aBceDelkj" value=GenieJC}}</span> 
-                </div>
-                <div class="col-xs-12 form-group">
-
-                  <label class="inputLabel">Conversion ID:</label> 
-                  <span>{{input class="form-control" type="text" id='ConversionID' placeholder="Conversion ID" value=ConversionID}}</span> 
-                </div>
-                <div class="col-xs-12 form-group">
-
-                  <label class="inputLabel">Segment IDs:</label>
-                  <div class="container-fluid">
-                    <div class="row">
-                          <div class="col-xs-12">
-                            {{input class="form-control" type="text" id='SegProdPage' placeholder="Product P." value=SegProdPage}}
-                          </div>  
-                      </div>  
-                    <div class="row">
-                      <div class="col-xs-12">
-                        {{input class="form-control" type="text" id='SegCompPage' placeholder="Complete P." value=SegCompPage}}
-                      </div>
-                    </div>  
-                    <div class="row">                
-                      <div class="col-xs-12">
-                        {{input class="form-control" type="text" id='SegROSPage' placeholder="ROS Page" value=SegROSPage}}
-                      </div>
-                    </div>
-                  </div>    
-                </div> */-->   
+                </div>  
               </div>
             </div>
           </div>        
           <div class="col-xs-12 col-sm-7 col-md-8">
             <span class="configBox">
 
-              <span class="configObject">config: {
-                <!--/*<span class="configObject">flexID:<span>{{flexID}}</span>,</span>*/--> 
-               <!--/* <span class="configObject">GenieJC:<span>{{GenieJC}}</span>,</span>
-                <span class="configObject">ConversionID:<span>{{ConversionID}}</span>,</span>
-                <span class="configObject">SegmentIds: [<span>{{SegProdPage}}</span>,<span>{{SegCompPage}}</span>,<span>{{SegROSPage}}</span>],</span>*/--> 
+              {<span class="configObject">config: {
                 <span class="configObject">timeStamp:"<span>{{timeStamp}}</span>",</span>
                 <span class="configObject">version:"<span>{{version}}</span>",</span>
                 <span class="configObject">avoidDOM:<span>{{avoidDOM}}</span></span>},
@@ -622,7 +793,9 @@
               <span class="configObject pages">
               </span>  
               <span class="configObject elements">
-              </span>                  
+              </span>                 
+              <span class="configObject pixels">
+              </span> }                 
             </span>
           </div> 
         </div> 
@@ -641,7 +814,11 @@
   <script src="js/router.js"></script>
   <script src="js/models/Page.js"></script>
   <script src="js/models/Element.js"></script>
+  <script src="js/models/Pixel.js"></script>
   <script src="js\controllers\Pages_controller.js"></script>
+  <script src="js\controllers\Elements_controller.js"></script>
+  <script src="js\controllers\Pixels_controller.js"></script>
+  <script src="js\controllers\Config_controller.js"></script>
   <script src="tests/runner.js"></script>
 </body>
 </html>

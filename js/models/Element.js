@@ -1,6 +1,6 @@
-/**
+/*******************************
 *
-* MODEL Configuration for what is being captured on the site. 
+* ELEMENT MODEL
 * 
 * @elementType ['orderId','orderVal','productId','idList','itemString','currency','other']
 * @regexInclude include - run the regex through each
@@ -9,7 +9,7 @@
 * @captureCriteria [contains, equal]
 * @captureType [ selector, globalVariable, dataLayer, dataLayerReverse ]
 * @captureSelector Selector or name of the global variable.
-*/
+*******************************/
 App.Element = DS.Model.extend({
    	name: DS.attr('string'),
 	elementType: DS.attr('string'),

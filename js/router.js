@@ -20,6 +20,11 @@ THIS.ROUTE -> Handle the actions both Route/Controller
 
       this.route('index');
       this.resource('element', {path: ':element_id'});
+    });    
+    this.resource('pixels', function(){
+
+      this.route('index');
+      this.resource('pixel', {path: ':pixel_id'});
     });
     this.resource('config');
     });
@@ -62,8 +67,6 @@ App.PagesRoute = Ember.Route.extend({
   }
 });
 
-
-
 App.ElementsRoute = Ember.Route.extend({
   model: function() {
 
@@ -86,6 +89,24 @@ App.ElementsRoute = Ember.Route.extend({
         element.deleteRecord();
         element.save();
         this.transitionTo('elements.index');
+      }
+    }
+  }
+});
+
+App.PixelsRoute = Ember.Route.extend({
+  model: function() {
+
+    return this.store.find('Pixel');
+  },
+  actions: {    
+    deletePixel: function(pixel) {
+
+      if(confirm('Are you sure you want to delete this Pixel?')){
+
+        pixel.deleteRecord();
+        pixel.save();
+        this.transitionTo('pixels.index');
       }
     }
   }

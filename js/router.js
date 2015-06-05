@@ -1,6 +1,7 @@
 /**
 *
 * ROUTING
+*
 */
 App.Router.map(function() {
 /*To display a model, the route needs to finish in a this.route()
@@ -61,13 +62,31 @@ App.PagesRoute = Ember.Route.extend({
 
         page.deleteRecord();
         page.save();
+
+        this.controllerFor('page').set('isEditing',false);
         this.transitionTo('pages.index');
       }
-    }
+    },
+    willTransition: function(transition){
+
+        if(this.controllerFor('page').get('isEditing') === true){
+
+          transition.abort();
+
+          displayAlert('modelTitle', 'Please finish the edition before moving', 'danger');
+        }
+     }
   }
 });
 
+/*******************
+*
+* PIXELS ROUTE
+*
+* deleteElement: deletion of the element. Amending double binding with pages related to this element while editing
+*/
 App.ElementsRoute = Ember.Route.extend({
+  controllerName : 'ElementsRoute',
   model: function() {
 
     return this.store.find('Element');
@@ -88,12 +107,29 @@ App.ElementsRoute = Ember.Route.extend({
 
         element.deleteRecord();
         element.save();
+
+        this.controllerFor('element').set('isEditing',false);
         this.transitionTo('elements.index');
       }
-    }
+    },
+    willTransition: function(transition){
+
+        if(this.controllerFor('element').get('isEditing') === true){
+
+          transition.abort();
+
+          displayAlert('modelTitle', 'Please finish the edition before moving', 'danger');
+        }
+     }
   }
 });
 
+/*******************
+*
+* PIXELS ROUTE
+*
+* deletePixel: deletion of the pixel
+*/
 App.PixelsRoute = Ember.Route.extend({
   model: function() {
 
@@ -106,9 +142,20 @@ App.PixelsRoute = Ember.Route.extend({
 
         pixel.deleteRecord();
         pixel.save();
+
+        this.controllerFor('pixel').set('isEditing',false);
         this.transitionTo('pixels.index');
       }
-    }
+    },
+    willTransition: function(transition){
+
+        if(this.controllerFor('pixel').get('isEditing') === true){
+
+          transition.abort();
+
+          displayAlert('modelTitle', 'Please finish the edition before moving', 'danger');
+        }
+     }
   }
 });
 

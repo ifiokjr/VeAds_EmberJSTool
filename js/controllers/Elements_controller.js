@@ -121,6 +121,7 @@ App.ElementController = Ember.ObjectController.extend({
 	actions:{
 		edit: function(element){
 
+			appLog(this.controllerName,'edit mode activated for element ' + this.get('id'));
 			this.set('isEditing', true);
 			this.set('tempPages', this.get('pages'));
 		},
@@ -138,7 +139,7 @@ App.ElementController = Ember.ObjectController.extend({
 			if(newPages.length < 1){
 
 				if(confirm('Not applying the element to any pages. Element will be removed...')){
-
+        			this.controllerFor('pixel').set('isEditing',false);
 					if(!this.send('deleteElement', element)){
 
 						appLog(this.controllerName,'setting back the pages to the original');
@@ -162,50 +163,51 @@ App.ElementController = Ember.ObjectController.extend({
 				element.set('captureCriteria', this.get('captureCriteria'));
 				element.set('captureSelector', this.get('captureSelector'));
 
+				console.log('newpages ' + newPages);
 				//Editing the pages related to the element
 				for(var i = 0; i < App.Page.FIXTURES.length; i++){
 
-					index = newPages.indexOf(App.Page.FIXTURES[i].id);
+					if(newPages.indexOf(App.Page.FIXTURES[i].id) >= 0){//We push this element to the pages don't have it and need it
 
-					if(index > -1){//We push this element to the pages don't have it and need it
-						if(App.Page.FIXTURES[i].elements.indexOf(elemID) == -1){
+
+							console.log('newpages contains the page with id ' + App.Page.FIXTURES[i].id);
 
 							appLog(this.controllerName,'pushing element id to page ' + App.Page.FIXTURES[i].id);
 							App.Page.FIXTURES[i].elements.pushUnique(elemID);
-						}
 					}else{//We remove it from the pages have it and don't need it
+
+						console.log('newpages doesnt contain the page with id ' + App.Page.FIXTURES[i].id);
+
 						if(App.Page.FIXTURES[i].elements.indexOf(elemID) > -1){
 
-							appLog(this.controllerName,'removing element id from ' + App.Page.FIXTURES[i].id);
+							appLog(this.controllerName,'removing element id from page ' + App.Page.FIXTURES[i].id);
 							App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(elemID),1);
 						}
 					}
 				}
+
+				var pixelElements = [];
+
+				appLog(this.controllerName, 'Resseting the elements and pages in pixels.');				
+				//Editing the pixels related to the element
+				for(var z = 0; z < App.Pixel.FIXTURES.length; z++){
+					for(var j = 0; j < App.Page.FIXTURES.length; j++){
+
+						if(App.Pixel.FIXTURES[z].pages.indexOf(App.Page.FIXTURES[j].id) >= 0){
+
+							appLog(this.controllerName, 'Page '+ App.Page.FIXTURES[j] +' selected, including elements to pixel ' + App.Pixel.FIXTURES[z].id);
+							pixelElements.pushUnique(App.Page.FIXTURES[j].elements);					
+						}
+					}
+
+					App.Pixel.FIXTURES[z].elements = pixelElements;
+					pixelElements = [];
+				}
+
 				element.save();
 				this.set('isEditing', false);
 				this.set('tempPages', '');
 			}
-		},
-	    deleteElement: function(element) {
-
-		    if(confirm('Are you sure you want to delete this Element?')){
-
-		        //Removing the element iDs from the pages.
-		        for(var i = 0; i < App.Page.FIXTURES.length; i++){
-
-					if(App.Page.FIXTURES[i].elements.indexOf(element.id) >= 0){
-
-						App.Page.FIXTURES[i].elements.splice(App.Page.FIXTURES[i].elements.indexOf(element.id),1);     
-					}
-		        }
-
-		        element.deleteRecord();
-		        element.save();
-		        this.transitionToRoute('elements.index');
-		    }else{
-
-		    	return false;
-		    }
 		}
 	}
 });

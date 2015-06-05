@@ -9,6 +9,7 @@
 App.Pixel = DS.Model.extend({
   name: DS.attr('string'),
   pixelType: DS.attr('string'),
+  active: DS.attr('string'),
 	config: DS.attr('array'),
 	pages: DS.attr('array'),
 	elements: DS.attr('array')
@@ -42,52 +43,58 @@ App.Pixel.FIXTURES = [
     {
       id: 1,
       name: 'Main Products Integration',
+      active:false,
       pixelType: 've',
       config: ['adsfasdf'],
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     },
 
     {
       id: 2,
       name: 'flex Integration',
+      active:false,
       pixelType: 'flex',
       config: ['123456'],
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     },
 
     {
       id: 3,
       name: 'dbm Integration',
+      active:false,
       pixelType: 'dbm',
       config: ['asdf','fdas'],
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     },
         {
       id: 4,
       pixelType: 'appNexus',
       name: 'nexus Integration',
+      active:false,
       config: ['111111', '222222','333333','654321'],   
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     },
 
     {
       id: 5,
       pixelType: 'customROS',
-      name: 'customROS Integration',    
+      name: 'customROS Integration', 
+      active:false,   
       config: ['https://trackingpixels.com/haha?i=can&see=you'],     
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     },
 
     {
       id: 5,
       pixelType: 'customConversion',
       name: 'customConversion Integration',
+      active:false,
       config: ['https://trackingpixels.com/i/?know=what&you=bought'],
-      pages: [1, 2],
-      elements: [1, 2]
+      pages: [],
+      elements: []
     }];

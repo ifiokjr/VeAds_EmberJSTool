@@ -32,6 +32,11 @@ App.PixelsIndexView = Ember.View.extend({
 			$('.pixels-index .tab-pane#new'+$('.pixels-index select option:selected').val()).addClass('active');
 			$('.pixels-index input').val('');
 		});
+
+		$('#newPixActive').click(function(){
+
+			$('#pagesToApplyPixel').toggle(300);
+		});
 	}
 });
 
@@ -44,6 +49,7 @@ App.PixelsIndexController = Ember.Controller.extend({
 			appLog(this.controllerName,'pixel creation');
 			var name = this.get('newPixName');
 			var type = $('#newTypePages select option:selected').val();
+			var active = this.get('newPixActive');
 			var pages = [];
 		  	var elements = [];
 		  	var config = [];
@@ -54,26 +60,35 @@ App.PixelsIndexController = Ember.Controller.extend({
 		  		return; 
 		  	}
 
-		  	if ($('.pixels-index .dropdown input[type=checkbox]:checked').length < 1) { 
+		  	/*if ($('.pixels-index .dropdown input[type=checkbox]:checked').length < 1) { 
 
 		  		displayAlert('pixels-index','Select at least one page where to deploy this pixels please...','danger');
 		  		return; 
-		  	}
+		  	}*/
 
-		  	//Selecting the clicked pages
-			$('.pixels-index .dropdown input[type=checkbox]:checked').each(function(i, selected){ 
-				pages[i] = $(selected).val(); 
-			});
 
-		  	//Retrieving the elements from the pages
-			for(var i = 0; i < App.Element.FIXTURES.length; i++){
+console.log("activeeeeeeee: " + active);
+		  	if(active === false || active === undefined){
 
-				for(var j = 0; j < pages.length; j++){
+				appLog(this.controllerName, 'Pixel not active');
+			}else{
 
-					if(App.Element.FIXTURES[i].pages.indexOf(pages[j]) >= 0){
+				appLog(this.controllerName, 'Pixel active');
+			  	//Selecting the clicked pages
+				$('.pixels-index .dropdown input[type=checkbox]:checked').each(function(i, selected){ 
+					pages[i] = $(selected).val(); 
+				});
 
-						appLog(this.controllerName, 'Page '+ pages[j] +' selected, including element ' + App.Element.FIXTURES[i].id + ' related');
-						elements.pushUnique(App.Element.FIXTURES[i].id);					
+			  	//Retrieving the elements from the pages
+				for(var i = 0; i < App.Element.FIXTURES.length; i++){
+
+					for(var j = 0; j < pages.length; j++){
+
+						if(App.Element.FIXTURES[i].pages.indexOf(pages[j]) >= 0){
+
+							appLog(this.controllerName, 'Page '+ pages[j] +' selected, including element ' + App.Element.FIXTURES[i].id + ' related');
+							elements.pushUnique(App.Element.FIXTURES[i].id);					
+						}
 					}
 				}
 			}
@@ -114,6 +129,7 @@ App.PixelsIndexController = Ember.Controller.extend({
 		  	var element = this.store.createRecord('Pixel', {
 
 		    	id: nextID(App.Pixel.FIXTURES),
+		    	active: active,
 			    name: name,
 			    pixelType: type,
 			    pages: pages,
@@ -122,25 +138,65 @@ App.PixelsIndexController = Ember.Controller.extend({
 		  	});
 
 		  	this.set('newPixName', '');
-			/*this.set('newESelector', '');
-			this.set('newEregexExclude', '');
-			this.set('newEregexInclude', '');
-			this.set('newEfallback', '');*/
+			this.set('newjourneyCode', '');
+			this.set('newflexId', '');
+			this.set('newCat', '');
+			this.set('newSrc', '');
+			this.set('newsegmentROS', '');
+			this.set('newsegmentProduct', '');
+			this.set('newsegmentConversionn', '');
+			this.set('ewconversionId', '');
+			this.set('newcustomROSn', '');
+			this.set('ewcustomConversion', '');
 			$('.dropdown input[type=checkbox]:checked').attr('checked', false);
 			$('.checkedSelected').text(0);
 			$('.dropdown dd ul').hide('fast');
 			hideAlert();
 
 			element.save();
-		},    
-	    deletePixel: function(pixel) {
+		}
+	}
+});
 
-	      if(confirm('Are you sure you want to delete this Pixel?')){
+/*****************
+* PIXEL CONTROLLER: controller for the display of the created pixels view
+* 
+* edit: sets the edit mode available.
+* doneEditing: saves the changes and sets the editing mode off.
+*****************/
+App.PixelController = Ember.ObjectController.extend({
+	controllerName: 'PageController',
+	isEditing: false,
+	actions:{
+		edit: function(){
 
-	        pixel.deleteRecord();
-	        pixel.save();
-	        this.transitionToRoute('pixels.index');
-	      }
-	    }
+			appLog(this.controllerName,'edit mode activated for pixel ' + this.get('id'));
+			this.set('isEditing', true);
+		},
+		doneEditing: function(pixel){
+
+			var elements = [];
+			var pages = this.get('pages');
+
+			appLog(this.controllerName,'editing the pixel with id ' + this.get('id'));
+
+			pixel.set('name', this.get('name'));
+			pixel.set('config', this.get('config'));
+
+			for(var i = 0; i < App.Page.FIXTURES.length; i++){
+
+				if(pages.indexOf(App.Page.FIXTURES[i].id) >= 0){
+
+					elements.pushUnique(App.Page.FIXTURES[i].elements);
+				}
+			}
+
+			appLog(this.controllerName, 'new elements for this pixel ' + elements);
+			pixel.set('pages', pages);
+			pixel.set('elements', elements);
+
+			pixel.save();
+			this.set('isEditing', false);
+		}
 	}
 });

@@ -23,7 +23,7 @@ App.Page.FIXTURES = [
 			{url:'http://dummy.com/example',params:'session=123'},
 			{url:'http://dummy.com/example',params:'session=123'},
 			{url:'awesome.com/checkout/complete/'}],
-		elements: ['1','8'],
+		elements: ['1', '8'],
 		dynamicIdentifiers: [
         {
           selector: '#progress',
@@ -37,18 +37,18 @@ App.Page.FIXTURES = [
         }
       ]
 	},{
-		id:5,
+		id:3,
 	    name: 'Product Page',
 	    pageType: 'product', 
 		addresses: [{url:'http://dummy.com/example',params:'session=123'}],
-		elements: ['0','8'],
+		elements: ['4'],
 		dynamicIdentifiers: []
 	},{
 		id:2,
 	    name: 'Basket Page',
 	    pageType: 'basket', 
 		addresses: [{url:'http://merdo.com/example', params:'session=456'}],
-		elements: ['6'],
+		elements: ['1'],
 		dynamicIdentifiers: [
         {
           selector: '#progress',

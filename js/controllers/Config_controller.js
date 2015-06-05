@@ -60,6 +60,7 @@ App.ConfigView = Ember.View.extend({
 
 			pixel.id = App.Pixel.FIXTURES[x].id;
 			pixel.name = App.Pixel.FIXTURES[x].name;
+			pixel.active = App.Pixel.FIXTURES[x].active;
 			pixel.pixelType = App.Pixel.FIXTURES[x].pixelType;
 			pixel.pages = App.Pixel.FIXTURES[x].pages;
 			pixel.elements = App.Pixel.FIXTURES[x].elements;
@@ -245,7 +246,13 @@ function formatPixels(pixelsArray){
 		  	}
 
 		formattedArray += '},</span></span>';
-		formattedArray += '<span class="configObject">overrides:{<span>active: false, pages: [], dataElements: [], ros: true</span>}}</span>';
+
+		formattedArray += '<span class="configObject">overrides:{';
+		formattedArray += '<span class="configObject">active:<span>'+pixelsArray[i].active+'</span>,</span>';
+		formattedArray += '<span class="configObject">pages:[<span>'+pixelsArray[i].pages+'</span>],</span>';
+		formattedArray += '<span class="configObject">elements:[<span>'+pixelsArray[i].elements+'</span>],</span>';
+		formattedArray += '<span class="configObject">ros:<span>true</span>}</span>';
+		formattedArray += '}</span>';
 		formattedArray += '<span class="configObject configObjectSeparator">,</span>';  
 	}
 

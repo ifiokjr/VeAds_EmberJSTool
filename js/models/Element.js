@@ -34,7 +34,7 @@ App.Element.FIXTURES = [
 	    name: 'Product ID',
 	    elementType:'orderVal',
 		fallback: '50',
-		pages: ['0','1'],
+		pages: ['2', '6'],
 		regexInclude: ';kj;k',
 		regexExclude: ''  ,
 		captureType: 'selector',
@@ -54,11 +54,11 @@ App.Element.FIXTURES = [
 		captureCriteria: 'equals',
 		captureSelector: '#productName'
 	},{
-		id:3,
+		id:4,
 	    name: 'Produc image',
 	    elementType:'productId',
 		fallback: '10',
-		pages: ['0','5'],
+		pages: ['3'],
 		regexInclude: ';kj;k',
 		regexExclude: ''  ,
 		captureType: 'selector',

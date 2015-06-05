@@ -84,9 +84,9 @@ App.IndexController = Ember.Controller.extend({
 *
 * displayAlert - Displays alert on the specified slots
 *
-*@element - String - Class of the element where to display the alert (page-index...)
-*@message - String - Message to display
-*@status - String - Status of the message. 
+* @element - String - Class of the element where to display the alert (page-index...)
+* @message - String - Message to display
+* @status - String - Status of the message. 
 ************/
 function displayAlert(element, message, status){
 
@@ -107,6 +107,8 @@ function displayAlert(element, message, status){
                 	'<strong>'+ messageTitle +'!</strong> <span>'+ message +'</span></div>';
 
     console.log(messageTitle + ': ' + element + ' -> ' + message);
+
+    $('.'+element+' .alert-slot').empty();
     $('.'+element+' .alert-slot').append(alert);
 }
 

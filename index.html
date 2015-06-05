@@ -69,8 +69,11 @@
       <b>TODOS:</b>
 
       <br><br>
-      When modifying page or element, recalculate the pages / elements applied on pixels.
-            <br><br>
+      when creating pixel, remopev the "checked = true"
+      <br><br>
+      double check the checked value on element creation if it's false and undefined.
+      <br><br>
+
       Creation of pages, elements & pixels, review the errors (fields nor empty...and with values that we expect)
       <br><br>
       Creation page -> create dynamic identifiers.  
@@ -222,6 +225,8 @@
           <img src="img/trash.png" alt="delete" height="18" width="18">
         </button>
       </span>
+      <div class="alert-slot">    
+      </div>
     </div>
     <div class="edit-button">
       {{#if isEditing}}
@@ -359,22 +364,22 @@
 	        </div>
 	       	<div class="row">
 	            <div class="col-xs-12 form-group">
-					<label class="inputLabel">Selector:</label>
-					<span class="pageInput">
-						{{input type="text" id="newESelector" class="form-control" placeholder="#exampleId / variableName" value=newESelector insert-newline="createElement"}}
-					</span>  
-	            </div> 
-	        </div>
-            <div class="row">
-	          	<div class="col-xs-12 form-group">
-	            	<label class="inputLabel">Use formmappings:</label>
-	            	<span class="pageInput">
-	            		<form>
-	              			{{input type="checkbox" id="newEFormMappigns" checked=newEFormMappigns insert-newline="createElement"}}
-	              		</form>
-	            	</span>   
-	          	</div>      
-            </div> 
+      					<label class="inputLabel">Selector:</label>
+      					<span class="pageInput">
+      						{{input type="text" id="newESelector" class="form-control" placeholder="#exampleId / variableName" value=newESelector insert-newline="createElement"}}
+      					</span>  
+      	     </div> 
+      	    </div>
+          <div class="row">
+          	<div class="col-xs-12 form-group">
+            	<label class="inputLabel">Use formmappings:</label>
+            	<span class="pageInput">
+            		<form>
+              			{{input type="checkbox" id="newEFormMappigns" checked=newEFormMappigns insert-newline="createElement"}}
+              		</form>
+            	</span>   
+          	</div>      
+          </div> 
           </div>
         </div>        
       </div> 
@@ -391,7 +396,6 @@
                   {{input type="text" id="newEregexinclude" class="form-control" placeholder="" value=newEregexInclude insert-newline="createElement"}}
                 </span>   
               </div>  
-
               <div class="col-xs-6 form-group">
                 <label class="inputLabel" for="newEregexexclude">Exclude</label>
                 <span class="pageInput">
@@ -458,6 +462,8 @@
           <img src="img/trash.png" alt="delete" height="18" width="18">
         </button>
       </span>
+      <div class="alert-slot">    
+      </div>
     </div>
     <div class="edit-button">
       {{#if isEditing}}
@@ -470,21 +476,21 @@
         <button class="btn btn-primary btn-sm" {{action "edit" this}} >Edit</button>
       {{/if}}
     </div>
-	<div class="modelContent">
-		<div>
-			<strong>Capture:</strong> 	
-			<div>Selector: <span>{{captureSelector}}</span></div>
-			<div>Type: <span>{{captureType}}</span></div>
-			<div>Criteria: <span>{{captureCriteria}}</span></div>
-			<div>UseMappings: <span>{{captureUseMappings}}</span></div>
-	    </div>      
-		<div>
-	      <strong>type:</strong>  <span>{{elementType}}</span>
-	    </div>  
-		<div>
-	      <strong>Fallback:</strong>  <span>{{fallback}}</span>
-	    </div>     
-		<div>
+    <div class="modelContent">
+      <div>
+      	<strong>Capture:</strong> 	
+      	<div>Selector: <span>{{captureSelector}}</span></div>
+      	<div>Type: <span>{{captureType}}</span></div>
+      	<div>Criteria: <span>{{captureCriteria}}</span></div>
+      	<div>UseMappings: <span>{{captureUseMappings}}</span></div>
+      </div>      
+      <div>
+          <strong>type:</strong>  <span>{{elementType}}</span>
+      </div>  
+      <div>
+          <strong>Fallback:</strong>  <span>{{fallback}}</span>
+      </div>     
+      <div>
 	      <strong>Regex:</strong> Include <span>{{regexInclude}}</span>, Exclude <span>{{regexExclude}}</span>
 	    </div>                 
 	    <div>
@@ -660,13 +666,20 @@
             </div>             
         </div>        
       </div>
-
-
       <div class="row panel-body">
+        <div class="col-xs-12 form-group">
+          <label class="inputLabel">Active:</label>
+            <span class="pageInput">
+              <form>
+                {{input type="checkbox" id="newPixActive" checked=newPixActive}}
+              </form>
+          </span>   
+        </div>      
+      </div>
+      <div id="pagesToApplyPixel" class="row panel-body">
         <div class="col-xs-12 form-group pages-to-apply">
           <label class="inputLabel">Pages to apply:</label>
-          <dl class="dropdown"> 
-            
+          <dl class="dropdown">             
               <dt>
                 <span class="multiSel">Select<span class="checkedSelected">0</span></span>   
               </dt>
@@ -682,7 +695,7 @@
               </dd>
           </dl>
         </div>        
-      </div>
+      </div> 
       <div class="row panel-footer">
         <div class="col-xs-8 col-sm-8 col-md-9 col-lg-10 alert-slot">    
         </div>
@@ -705,7 +718,9 @@
         <button {{action "deletePixel" this}} >
           <img src="img/trash.png" alt="delete" height="18" width="18">
         </button>
-      </span>
+      </span>      
+      <div class="alert-slot">    
+      </div>
     </div>
     <div class="edit-button">
       {{#if isEditing}}
@@ -726,26 +741,28 @@
 	      <strong>Pages applied:</strong> [<span>{{pages}}</span>]
 	    </div>
       <div>
-        <strong>Elements applied:</strong> [<span>{{elements}}</span>]
+        <strong>Configuration:</strong> [<span>{{config}}</span>]
       </div> 
       <div>
-        <strong>Elements applied:</strong> [<span>{{config}}</span>]
+        <strong>Elements applied:</strong> [<span>{{elements}}</span>]
       </div> 
     </div> 
   </script>
 
-  <!--/*<script type="text/x-handlebars" id="_pixeledit">
+  <script type="text/x-handlebars" id="_pixeledit">
       Name:
       <span>
         {{textarea valueBinding='name'}}
-      </span> 
-      Addresses:     
+      </span>
+      Config:      
       <span>
-        {{#each elem in addresses}} 
-            <span>{{textarea valueBinding='elem.url'}}</span><span>{{textarea valueBinding='elem.params'}}</span>
-        {{/each}}
-      </span> 
-  </script>*/-->
+        {{textarea valueBinding='config'}}
+      </span>
+      Pages:      
+      <span>
+        {{textarea valueBinding='pages'}}
+      </span>    
+  </script>
 
 
 <!-- ****** -->

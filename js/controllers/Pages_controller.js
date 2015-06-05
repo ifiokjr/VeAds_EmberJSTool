@@ -124,11 +124,12 @@ App.PagesIndexController = Ember.Controller.extend({
 * deletePage: deletion of the page, considering the elements applied. If element is empty after page removal, element is removed.
 *****************/
 App.PageController = Ember.ObjectController.extend({
-	controllerName: 'PageController',
+	controllerName: 'PixelController',
 	isEditing: false,
 	actions:{
 		edit: function(){
 
+			appLog(this.controllerName,'edit mode activated for pages ' + this.get('id'));
 			this.set('isEditing', true);
 		},
 		doneEditing: function(element){
@@ -140,29 +141,6 @@ App.PageController = Ember.ObjectController.extend({
 
 			element.save();
 			this.set('isEditing', false);
-		},
-		deletePage: function(page) {
-
-			if(confirm('Are you sure you want to delete this Page?')){
-
-				//Removing the pages from the related elements
-				for(var i = 0; i < App.Element.FIXTURES.length; i++){
-
-					if(App.Element.FIXTURES[i].pages.indexOf(page.id) >= 0){
-
-						App.Element.FIXTURES[i].pages.splice(App.Element.FIXTURES[i].pages.indexOf(page.id),1);
-
-						if(App.Element.FIXTURES[i].pages.length === 0){
-
-							App.Element.FIXTURES.splice(i,1);		
-						}					
-					}
-				}
-
-				page.deleteRecord();
-				page.save();
-				this.transitionToRoute('pages.index');
-			}
-	    }
+		}
 	}
 });

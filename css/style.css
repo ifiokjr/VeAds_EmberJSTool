@@ -76,7 +76,7 @@ html, body{
 	.table>tbody>tr:hover{
 
 		background-color: #D2D2D2;
-		border-left:3px solid black;
+		border-left:4px solid black;
 	}	
 		.table .delete-button{
 
@@ -136,19 +136,28 @@ input{
 
   border-bottom: 3px solid black;
   margin-bottom: 15px;
-  padding-bottom: 10px;
   font-style: italic;
   font-weight:bold;
+}
+.modelTitle .alert-slot{
+
+	margin: 10px 0px;
+  	font-style: initial;
+  	font-weight: initial;
 }
 .modelTitle h1{
 
 	font-style:normal;
   	padding-bottom: 5px;
 }
+.modelContent div{
+
+	margin: 4px 0px;
+}
 .modelContent strong{
 
 	background-color:black;
-	padding:1px;
+	padding:2px;
 	margin-right: 5px;
 }
 .grey-panel{
@@ -327,6 +336,14 @@ form span input[type="radio"]{
 		}
 	}
 
+
+/**
+*PIXEL ACTIVE 
+*/
+#pagesToApplyPixel{
+	display:none;
+}
+
 /**
 * ERRORS
 */
@@ -382,14 +399,12 @@ form span input[type="radio"]{
 	font-size: 15px;
 	line-height: 1.42857143;
 	color: #333;
-	/*word-break: break-all;
-	word-wrap: break-word;*/
 	background-color: #f5f5f5;
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	font-family: 'Neuton', Courier, serif;
-	/*overflow: scroll;
-	height: 75vh;*/
+	overflow: scroll;
+	height: 75vh;
 }
 .configObject{
 	display:block;
